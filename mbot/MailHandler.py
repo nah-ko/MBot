@@ -22,17 +22,18 @@ class MailHandler:
         self.dest    = dest
 
     def read_conf(self, config):
+	''' Config parser '''
+	pass
+
+    def read_conf2(self, config, properties):
         ''' Config parser '''
-        pass
-    
-    def read_conf(self, config, properties):
-        ''' Config parser '''
+	self.log.debug("[MailHandler]: read_conf2")
         for p in properties:
+	    self.log.debug("[MailHandler]: p = %s" % p)
             if config.has_option(self.section, p):
                 setattr(self, p, config.get(self.section, p))
             else:
                 setattr(self, p, None)
-
     
     def handle(self, body):
         return [('text/plain', body)]

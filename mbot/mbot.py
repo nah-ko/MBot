@@ -137,10 +137,11 @@ def main():
 		log.debug("section: %s" % section)
 		subjects = section.split(',')
 		handler  = Conf.get(section, 'handler')
-		log.debug("subjects: %s for handler: %s" % (subjects, handler)
-		for subject in subjects:
-			hs[subject] = [section, handler]
-			log.debug("subject: %s" % subject)
+		log.debug("subjects: %s for handler: %s" % (subjects,
+                                                            handler))
+		for s in subjects:
+			hs[s] = [section, handler]
+			log.debug("subject: %s" % s)
 	log.debug("Modules by subject: %s" % hs)
 
 	# now we can try to import appropriate module and use it

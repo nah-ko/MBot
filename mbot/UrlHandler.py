@@ -18,7 +18,7 @@ class UrlHandler(MailHandler.MailHandler):
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
         self.log.notice("[UrlHandler]: read_conf")
-        self.read_conf(ConfObj, ['mailsize', 'attsize'])
+        self.read_conf2(ConfObj, ['mailsize', 'attsize'])
 
     def handle(self, body):
         """ The body may contain one url per line """
@@ -27,7 +27,7 @@ class UrlHandler(MailHandler.MailHandler):
 
         self.log.notice("[UrlHandler]")
         for line in body.split():
-            if glob_size < self.MAILSIZE:
+            if glob_size < self.mailsize:
                 if line != '' and line is not None:
                     (p, server, path, params, q, f) = urlparse.urlparse(line)
                     url   = urlparse.urlunparse((p, server,
@@ -42,7 +42,7 @@ class UrlHandler(MailHandler.MailHandler):
                     size = int(src.info().getheader("Content-Length"))
                     self.log.debug("[UrlHandler]: size='%d'" % size)
                         
-                    if size < self.ATTSIZE:
+                    if size < self.attsize:
                         result.append((src.info().gettype(), src.read()))
                         glob_size += size
                                 
@@ -52,14 +52,14 @@ class UrlHandler(MailHandler.MailHandler):
                             "[UrlHandler]: Retreiving url '%s'" % url)
                     else:
                         type = "text/plain"
-                        data = "Attachment size exceed %s (%d)" % (self.ATTSIZE,
+                        data = "Attachment size exceed %s (%d)" % (self.attsize,
                                                                    size) + \
                                " for '%s'" % url
                         self.log.notice("[UrlHandler]: %s" % data)
                         result.append((type, data))
             else:
                 type = "text/plain"
-                data = "Mail size exceed %s (%d)" % (self.MAILSIZE,
+                data = "Mail size exceed %s (%d)" % (self.mailsize,
                                                      glob_size)
                 self.log.notice("[UrlHandler]: %s" % data)
                 result.append((type, data))

@@ -19,7 +19,7 @@ class GoogleHandler(MailHandler.MailHandler):
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
         self.log.notice("[GoogleHandler]: read_conf")
-        self.read_conf(ConfObj, ['host', 'base_url'])
+        self.read_conf2(ConfObj, ['host', 'base_url'])
 
     def handle(self, body):
         """ The body may contain one url per line """
@@ -28,10 +28,10 @@ class GoogleHandler(MailHandler.MailHandler):
         self.log.notice("[GoogleHandler]")
         for line in body.split('\n'):
             if line != '' and line is not None:
-                url = self.BASE_URL + urllib.quote(line)
+                url = self.base_url + urllib.quote(line)
                 self.log.debug("[GoogleHandler]: url='%s'" \
                                    % url)
-                conn = httplib.HTTPConnection(self.HOST)
+                conn = httplib.HTTPConnection(self.host)
                 conn.request("GET", url)
                 r = conn.getresponse()
 

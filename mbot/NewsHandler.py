@@ -22,7 +22,7 @@ class NewsHandler(MailHandler.MailHandler):
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
         self.log.notice("[NewsHandler]: read_conf")
-        self.read_conf(ConfObj,
+        self.read_conf2(ConfObj,
                        ['host', 'db', 'db_user', 'db_pass',
                         'photo_tbl', 'photo_tblsq',
                         'news_tbl', 'news_tblsq',
@@ -43,7 +43,7 @@ class NewsHandler(MailHandler.MailHandler):
         self.log.debug("[NewsHandler]: getsite -> dom='%s'" % dom)
 
         try:
-           dico_site = eval(self.SITE)
+           dico_site = eval(self.site)
            site      = dico_site[dom]
         except KeyError, SyntaxError:
            site = 'test'
@@ -62,15 +62,16 @@ class NewsHandler(MailHandler.MailHandler):
             myquery = """
             INSERT INTO %s (site,date,de,sujet,message)
             VALUES ('%s','%s','%s','%s','%s')
-            """ % (self.NEWS_TBL, SITE, date, sender, subject, re.escape(text))
+            """ % (self.news_tbl, SITE, date, sender, subject, re.escape(text))
             
         else:
             myquery = """
             INSERT INTO %s (site,date,de,sujet,message,id_img)
             VALUES ('%s','%s','%s','%s','%s','%d')
-            """ % (self.NEWS_TBL, SITE,
+            """ % (self.news_tbl, SITE,
                    date, sender, subject, re.escape(text), img_id)
             
+	self.log.debug("[NewsHandler]: myquery = %s" % myquery)
         self.id    = self.execQuery(myquery)
         self.log.debug("[NewsHandler]: add_news -> id='%d'" % self.id)
         return self.id
@@ -83,11 +84,12 @@ class NewsHandler(MailHandler.MailHandler):
         id_img = id_news = 0
 
         # Handle text part of a news
+        self.log.notice("[NewsHandler]: Use [%s] section" % self.section)
         if type(body) == type(""):
             id_news = self.add_news(body)
-            result    = result + "News #%d added" % id_news
+            result    = result + " #%d added" % id_news
             self.log.debug("[NewsHandler]: result='%s' for '%s'" \
-                           % (result, self.params))
+                           % (result, self.section))
 
         # Handle image part of a news
         else:
@@ -111,8 +113,8 @@ class NewsHandler(MailHandler.MailHandler):
                 if maintype == "image":
                     self.log.debug("[NewsHandler]: image part")
                     
-                    file    = self.ATTACH_PATH + body.get_filename()
-                    TNfile  = self.ATTACH_PATH + "TN_" + body.get_filename()
+                    file    = self.attach_path + body.get_filename()
+                    TNfile  = self.attach_path + "TN_" + body.get_filename()
 
                     # We first save the image
                     f = open(file, "w")
@@ -120,7 +122,7 @@ class NewsHandler(MailHandler.MailHandler):
                     f.close()
                     
                     self.log.debug("[NewsHandler]: image saved to '%s'" \
-                                   % self.ATTACH_PATH)
+                                   % self.attach_path)
 
                     # Then a thumbnail
                     img    = Image.open(file)
@@ -131,7 +133,7 @@ class NewsHandler(MailHandler.MailHandler):
                     f.close()
                     
                     self.log.debug("[NewsHandler]: thumbnail created to '%s'" \
-                                   % self.ATTACH_PATH)
+                                   % self.attach_path)
                     
                     filesize = os.stat(file).st_size
 
@@ -142,7 +144,7 @@ class NewsHandler(MailHandler.MailHandler):
                                             TNdata, filesize)
                     
                     self.log.debug("[NewsHandler]: image #%d " % id_img + \
-                                   "added to DB '%s'" % self.DB)
+                                   "added to DB '%s'" % self.db)
 
                     # And we clean the temporary created files
                     os.remove(file)

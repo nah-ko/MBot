@@ -17,16 +17,14 @@ import ConfigParser
 import pg
 from pg import INV_WRITE
 
-SECTION	= 'NEWS'
-
 class PgNewsHandler(NewsHandler.NewsHandler):
     """ Manage adding news in a PostgreSQL data base """
 
     def dbconn(self):
         """ Connect to the data base """
         self.log.notice("[PgNewsHandler]: dbconn")
-        db = pg.connect(dbname=self.DB, host=self.HOST,
-                        user=self.DB_USER, passwd=self.DB_PASS)
+        db = pg.connect(dbname=self.db, host=self.host,
+                        user=self.db_user, passwd=self.db_pass)
 
         return db
 
@@ -34,7 +32,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         """ Execute the given query """
         db      = self.dbconn()
         req     = db.query(sql)
-        self.id = self.getid(db, self.NEWS_TBLSQ)
+        self.id = self.getid(db, self.news_tblsq)
         db.close()
 
         return self.id
@@ -78,17 +76,17 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         INSERT INTO %s (description, img_data, tnimg_data,
                         filename, filesize,filetype)
         VALUES ('%s','%s','%s','%s','%d','%s')
-        """ % (self.PHOTO_TBL, desc, img_LO.oid, TNimg_LO.oid,
+        """ % (self.photo_tbl, desc, img_LO.oid, TNimg_LO.oid,
                filename, filesize, filetype)
         req      = db.query(sql)
 
         db.query("commit")
 
         # Now we add the link to the image from the news table
-        id      = self.getid(db, self.PHOTO_TBLSQ)
+        id      = self.getid(db, self.photo_tblsq)
         self.log.debug("[PgNewsHandler]: add_img => id='%d'" % id)
         myquery	= "UPDATE %s SET id_img='%d' WHERE id='%d'" \
-                  % (self.NEWS_TBL, id, news_id)
+                  % (self.news_tbl, id, news_id)
         
         req     = db.query(myquery)
         db.close()

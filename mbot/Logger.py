@@ -30,7 +30,7 @@ class Logger:
                 self.log_level = self.getLevel(LogLevel)
 
                 # Service and pid init
-                Service = os.path.basename(sys.argv[0])
+                Service = os.path.basename(sys.argv[0]).split('.')[0]
                 Pid = int(os.getpid())
 
                 syslog.openlog('%s[%d]' % (Service, Pid))

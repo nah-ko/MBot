@@ -16,16 +16,14 @@ import ConfigParser
 
 import MySQLdb
 
-SECTION	= 'NEWS'
-
 class MyNewsHandler(NewsHandler.NewsHandler):
     """ Manage adding news in a MySQL data base """
 
     def dbconn(self):
         """ Connect to the data base """
         self.log.notice("[MyNewsHandler]: dbconn")
-        db = MySQLdb.connect(db=self.DB, host=self.HOST,
-                             user=self.DB_USER, passwd=self.DB_PASS)
+        db = MySQLdb.connect(db=self.db, host=self.host,
+                             user=self.db_user, passwd=self.db_pass)
         return db
 
     def execQuery(self, sql):
@@ -33,7 +31,7 @@ class MyNewsHandler(NewsHandler.NewsHandler):
         db    = self.dbconn()
         mycur = db.cursor()
         mycur.execute(sql)
-        self.id = self.getid(db, self.NEWS_TBLSQ)
+        self.id = self.getid(db, self.news_tblsq)
         db.close()
 
         return self.id
@@ -58,7 +56,7 @@ class MyNewsHandler(NewsHandler.NewsHandler):
         INSERT INTO %s (description, img_data, tnimg_data,
                         filename, filesize, filetype)
          VALUES ('%s','%s','%s','%s','%d','%s')
-         """ % (self.PHOTO_TBL, desc, db.escape_string(filedata),
+         """ % (self.photo_tbl, desc, db.escape_string(filedata),
                 db.escape_string(TNfiledata), filename, filesize, filetype)
 
         # First insert the image
@@ -67,10 +65,10 @@ class MyNewsHandler(NewsHandler.NewsHandler):
         mycur.execute(myquery)
 
         # Now we add the link to the image from the news table
-        id      = self.getid(db, self.PHOTO_TBLSQ)
+        id      = self.getid(db, self.photo_tblsq)
         self.log.debug("[MyNewsHandler]: add_img => id='%d'" % id)
         myquery	= "UPDATE %s SET id_img='%d' WHERE id='%d'" \
-                  % (self.NEWS_TBL, id, news_id)
+                  % (self.news_tbl, id, news_id)
         mycur	= db.cursor()
         mycur.execute(myquery)
         
