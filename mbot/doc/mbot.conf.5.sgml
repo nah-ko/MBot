@@ -1,4 +1,12 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+
+<!--
+    Man page for mbot.conf
+    http://mbot.tuxfamily.org
+
+    $Id$
+-->
+
 <refentry>
   <refentryinfo>
     <address>
@@ -89,7 +97,7 @@
   <refsect1>
     <title>Default and common options</title>
     <para>
-      For each section we have a common option who's:
+      For each section we have a common option which are:
       <variablelist>
       <varlistentry>
         <term>HANDLER</term>
@@ -297,7 +305,10 @@
 	            <para>
 		      This is a list in which mbot will select the site
 		      according to the receiver email. It will be used
-		      to feed the database.
+		      to feed the database. This is used if the MTA host
+		      multiple domains, then we can define more than one
+		      mbot entry in alias file. Database will then have
+		      site column which refer to domain hosted.
 	            </para>
 	          </listitem>
 	      </varlistentry>
@@ -330,6 +341,47 @@
 
       </variablelist>
 	Note that there is no option for PipeHandler.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Example</title>
+    <para>
+      <informalexample>
+      <programlisting>
+      [DEFAULT]
+      MBOT_ADDRESS = mbot@localhost
+      LOG_LEVEL    = info
+
+      [news,nouvelles]
+      HANDLER     = PgNewsHandler
+      HOST        = localhost
+      DB          = db
+      DB_USER     = user
+      DB_PASS     = pass
+      SITE        = {'':'test', 'site1.tld':'site1', 'site2.tld':'site2'}
+      PHOTO_TBL   = photo_test
+      PHOTO_TBLSQ = photo_test_id_seq
+      NEWS_TBL    = news_test
+      NEWS_TBLSQ  = news_test_id_seq
+      ATTACH_PATH = /tmp/
+      tnX         = 120
+      tnY         = 90
+
+      [search,google]
+      HANDLER  = GoogleHandler
+      HOST     = www.google.fr
+      BASE_URL = /search?q=
+
+      [wget,fetch,fetchurl]
+      HANDLER  = UrlHandler
+      MAILSIZE = 5242880
+      ATTSIZE  = 1024000
+
+      [|]
+      HANDLER = PipeHandler
+      </programlisting>
+      </informalexample>
     </para>
   </refsect1>
 
