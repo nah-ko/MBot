@@ -2,7 +2,7 @@
 
 # $Id$
 
-import Image, os, re, sys
+import Image, os, re, sys, getopt
 import MySQLdb, pg
 import ConfigParser
 
@@ -109,3 +109,6 @@ def main():
 	    i = i +1
 
 	dbmy.close()
+
+if __name__ == "__main__":
+	main()
