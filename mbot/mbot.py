@@ -32,25 +32,31 @@ import MailHandler
 import Logger
 
 # default values
-global MBOT_ADDRESS, LOG_LEVEL, MODULES
+global MBOT_ADDRESS, LOG_LEVEL
 
 CONFIG_FILE  = "./mbot.conf"
 MBOT_ADDRESS = "mbot@localhost"
 LOG_LEVEL    = "debug"
-MODULES      = ""
+SECTIONS     = ""
 
 def read_defaults(configfile = CONFIG_FILE):
 	''' Reading configuration file '''
 
-	global MBOT_ADDRESS, LOG_LEVEL, MODULES
+	global MBOT_ADDRESS, LOG_LEVEL, SECTIONS
 	
+	SECTION = 'DEFAULT'
+
+	# Opening file
 	config = ConfigParser.ConfigParser()
 	config.read(configfile)
 	
 	# Reading options
-	MBOT_ADDRESS = config.get('DEFAULT','MBOT_ADDRESS')
-	LOG_LEVEL    = config.get('DEFAULT','log_level')
-	MODULES      = eval(config.get('DEFAULT','modules'))
+	if config.has_option(SECTION, 'MBOT_ADDRESS'):
+	    MBOT_ADDRESS = config.get(SECTION, 'MBOT_ADDRESS')
+	if config.has_option(SECTION, 'log_level'):
+	    LOG_LEVEL    = config.get(SECTION, 'log_level')
+	# Look for section list
+	SECTIONS = config.sections()
 
 	return config
 
@@ -68,7 +74,7 @@ def usage():
 
 def main():
 	""" Here we do the job """
-	global MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL, MODULES
+	global MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL
 
 	config_file = CONFIG_FILE
 	try:
@@ -88,8 +94,8 @@ def main():
 	log.notice("Using config file %s\n" % config_file)
 	log.debug("Configuration values: MBOT_ADDRESS='%s'" \
 		      % MBOT_ADDRESS + \
-		      "LOG_LEVEL='%s' MODULES='%s'" \
-		      % (LOG_LEVEL, MODULES))
+		      "LOG_LEVEL='%s'" \
+		      % LOG_LEVEL)
 
 	# we read the mail
 	mesg = read_email()
@@ -126,11 +132,15 @@ def main():
 	# we initialize a handler corresponding to the given subject
 	# first we create a new dict reverse from module one
 	rev_modules = {}
-	for m in MODULES:
-		log.debug("m: %s" % m)
-		for s in MODULES[m]:
-			log.debug("s: %s" % s)
-			rev_modules[s] = m
+	for section in SECTIONS:
+		log.debug("section: %s" % section)
+		subjects = section.split(',')
+		handler  = Conf.get(section, 'handler')
+		log.debug("subjects: %s for handler: %s" % (subjects, handler)
+		for subject in subjects:
+			rev_modules[subject] = handler
+			log.debug("subject: %s" % subject)
+	log.debug("Modules by subject: %s" % rev_modules)
 
 	# now we can try to import appropriate module and use it
 	h = None
