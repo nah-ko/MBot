@@ -59,12 +59,6 @@ SELECT SETVAL('photo_test_id_seq',(select case when max(id)>0 then max(id)+1 els
 -- Primary keys and references
 
 ALTER TABLE ONLY news_test
-    ADD CONSTRAINT news_test_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY photo_test
-    ADD CONSTRAINT photo_test_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY news_test
     ADD CONSTRAINT constraint_id_img FOREIGN KEY (id_img) REFERENCES photo_test(id) ON UPDATE NO ACTION ON DELETE CASCADE;
 
 COMMIT;
