@@ -45,8 +45,9 @@ Pourquoi ? Le but premier était de permettre à des gens n'ayant pas accès
  des commandes au serveur afin que ce dernier les executes.
 \layout Standard
 
-Fonctionnalités Elles sont actuellement au nombre de 4 et servent à manier
- les infos que l'utilisateur met dans son message.
+Fonctionnalités.
+ Elles sont actuellement au nombre de 4 et servent à manier les infos que
+ l'utilisateur met dans son message.
  Ces fonctionnalitées sont les « Handler ».
 \layout Standard
 
@@ -137,4 +138,26 @@ Le handler récupère le destinataire, le corps du message, l'expéditeur,
  sont "échappés" afin de passer correctement lors du passage à la base de
  donnée.
  
+\layout Section
+
+Fonctionnement approfondi
+\layout Standard
+
+Nous allons décrire ici le fonctionnement de certains handler, «GoogleHandler»
+ et «NewsHandler» en l'occurence car se cont les plus complexe.
+\layout Subsection
+
+Google
+\layout Standard
+
+La méthode utilisée pour ce handler est de récuperer dans le corps du message
+ les mots clefs qui seront à passer en paramètre à Google.
+\layout Standard
+
+En premier lieu, on a défni dans le fichier de configuration deux options:
+ HOST et BASE_URL, ces options servent à définir le serveur et la chaine
+ de recherche.
+ Le corps du message contient les mots clefs, ceux-ci sont alors quotés
+ afin d'être passé dans la chaine de recherche qui va être envoyée à Google.
+ Il y a autant de recherches qu'il y a de lignes dans le message.
 \the_end
