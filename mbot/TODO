@@ -1,7 +1,121 @@
-General
+$Id$
 
-. When mail is overweighted, cut it
+General
+-=-=-=-
+ . Support GnuPG, that is checking for uid in a keyring and optionnaly
+   make mbot sign its answers
+
+ . Plan to support i18n in messages, debian package and help files
+
+ . Make a web page, design a logo (in SVG, of course)
+
+
+Global configuration
+-=-=-=-=-=-=-=-=-=-=-
+ . The section name should not depend on the subjet to match
+
+   Then mbot will use the first section in the config matching the
+   received mail (alias, from, subject and lists must all match)
+
+      [MySection]
+      alias     =
+      subject   =
+      whitelist = 
+      blacklist =
+      ...
+
+   See thereafter for details on some new config elements.
+
+
+Per handler configuration
+-=-=-=-=-=-=-=-=-=-=-=-=-
+ . Add a Subject element containing a list of regexp for subject
+   matching
+
+      subject = ["wget.*", "fetchurl.*"]
+
+ . Add a From element containing a list of aliases to match,
+   defaulting to '*', thus allowing to configure multiple aliases in
+   the same file.
+
+      alias = [dict@server.tld, webster@server.tld]
+
+ . Add a policy element indicating how to answer a mail, for example
+   allowing not to anwser to blacklisted people
+
+      policy = ignore_blacklist
+
+ . Add a Lang element containing the language to be used by mbot when
+   sending back messages to sender, choose a sensitive default (fr, as
+   the developpers are frenchies ?)
+
+      lang = fr
+
 
 Handlers
+-=-=-=-=-
+ . Provide a plugin subdir where to place handlers, each in its subdir
 
-. Mappy
+      mbot/
+        handlers/
+          web/
+            UrlHandler.py
+            GoogleHandler.py
+          news/
+            NewsHandler.py
+            PgNewsHandler.py
+            MyNewsHandler.py
+          dict/
+            ...
+
+ . Then package handlers separatly, managing dependencies for each of
+   them.
+
+      mbot - multi purpose Mail roBOT
+      mbot-web - web handlers (wget, google) for mbot
+      mbot-news - manage news by mail using PostgreSQL or MySQL
+      mbot-explotf - update your explotf web photo gallery by mail
+
+ . UrlHandler, GoogleHandler (mbot-web)
+
+   Add a config element to set the 'User-Agent' to use, defaulting to
+   'mbot' allong with our web page url.
+
+
+New Handlers
+-=-=-=-=-=-=-
+ . HelpHandler
+
+   Each handler should provide a user-guide.lang providing some text
+   to explain how to use it.
+
+   Then you can mail mbot with the subject 'help wget' to get the help
+   message for the handler configured to answer to your message, but
+   matching on the 'wget' subject.
+
+ . ExploTfHandler
+
+   This handler will receive some photos to publish with ExploTF, and
+   place them in the wanted album. The photos should be sent all in a
+   .zip file or attached in a mime multipart email.
+
+   See http://explotf.gouteix.com/contents/index.en.html for further
+   information on the ExploTF software.
+
+   Note: we may have to debian package explotf to satisfy the
+   mbot-explotf recommends dependency.
+
+ . BlogHandler
+
+   Support some of the blog tools in usage out there...
+
+ . Maporama
+
+   This handler should allow for maporama consultation by email.
+   See http://maporama.com
+
+ . CiteFutee
+
+   This handler should allow for citefutee services usage by email.
+   See http://citefutee.com/
+
