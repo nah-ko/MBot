@@ -1,0 +1,21 @@
+The News Handler require databases to save news data and maybe image.
+News DB is to be created according to the structure behind:
+
+#
+# Table structure for table 'news'
+#
+
+CREATE TABLE news (
+  id int(100) unsigned NOT NULL auto_increment,
+  site text,
+  date text,
+  de text,
+  message text,
+  id_img int(4) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  KEY id (id),
+  FULLTEXT KEY from (de,message)
+) TYPE=MyISAM COMMENT='Table d''envoi de news par mail pour html';
+
+For Image DB I've used the article written by Florian Dittmer and readable here :
+http://www.phpbuilder.com/columns/florian19991014.php3
