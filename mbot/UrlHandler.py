@@ -21,8 +21,8 @@ class UrlHandler(MailHandler.MailHandler):
         ''' Getting config options for this handler '''
 
         self.log.notice("[UrlHandler]: read_conf")
-        self.MAILSIZE = int(ConfObj.get(SECTION, 'mailsize'))
-        self.ATTSIZE  = int(ConfObj.get(SECTION, 'attsize'))
+        self.MAILSIZE = ConfObj.getint(SECTION, 'mailsize')
+        self.ATTSIZE  = ConfObj.getint(SECTION, 'attsize')
 
     def handle(self, body):
         """ The body may contain one url per line """
