@@ -12,5 +12,5 @@
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
     def handle(self, body):
-        return [body]
+        return [('text/plain', body)]
 
