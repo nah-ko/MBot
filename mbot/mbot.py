@@ -21,6 +21,7 @@ import ConfigParser, time, socket
 
 # All this will be used to create the response mail
 from email import Encoders
+from email.MIMEBase import MIMEBase
 from email.MIMEAudio import MIMEAudio
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEImage import MIMEImage
@@ -169,7 +170,7 @@ def main():
 			else:
 				data = MIMEBase(maintype, subtype)
 				data.set_payload(out)
-				Encoders.encode_base64(msg)
+				Encoders.encode_base64(mesg)
 
 			# When in debug mode, we do not send back mail
 			if not DEBUG:
