@@ -1,0 +1,12 @@
+$Id$
+
+2003-12-12   Christophe Truffier toffe@nah-ko.org
+
+          * All files: added some syslog entries
+
+	  * Logger.py: logger class for syslog use
+
+	  * mbot.py: modules import now dynamic, everything is logged by
+	  syslog
+
+	  Initial release 0.2
