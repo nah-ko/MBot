@@ -41,18 +41,15 @@ CONFIG_FILE  = "./mbot.conf"
 def dolog(message):
 	''' Turning log formating into standard way '''
 
-	# Get pid
-	pid = int(os.getpid())
-	
-	#Log format:
-	#[Short day] [Numeric day] [Time] [Hostname] [Service[Pid]] : [Message]
+	# Log format:
+	# [Short day] [Numeric day] [Time] [Hostname] [Service[Pid]] : [Message]
 	Time = time.strftime("%b %d %H:%M:%S", time.localtime())
 	Hostname = socket.gethostname()
 	Service = os.path.basename(sys.argv[0])
-	Pid = pid
+	Pid = int(os.getpid())
 	Message = message
 	
-	# Log
+	# Log line
 	logline = "%s %s %s[%d] : %s" % (Time, Hostname, Service, Pid, Message)
 	
 	return logline
@@ -64,13 +61,11 @@ def read_defaults(configfile = CONFIG_FILE):
 	
 	config = ConfigParser.ConfigParser()
 	config.read(configfile)
-	for option in config.defaults():
-		if option == 'debug':
-			DEBUG = config.get('DEFAULT',option)
-		elif option == 'mbot_address':
-			MBOT_ADDRESS = config.get('DEFAULT',option)
-		elif option == 'logfile':
-			LOGFILE = config.get('DEFAULT',option)
+	
+	# Reading options
+	DEBUG = config.get('DEFAULT','debug')
+	MBOT_ADDRESS = config.get('DEFAULT','mbot_address')
+	LOGFILE = config.get('DEFAULT','logfile')
 
 	return config
 
