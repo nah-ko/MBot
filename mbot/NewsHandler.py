@@ -54,7 +54,7 @@ class NewsHandler(MailHandler.MailHandler):
 		db 	= MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
 		date 	= self.date
 		sender 	= self.sender
-		subject	= self.params
+		subject	= re.escape(self.params)
 		dest 	= self.domext(self.dest)
 		TABLE 	= "news_test"
 		if dest == "nah-ko.org":

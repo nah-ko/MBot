@@ -15,7 +15,7 @@
 
 # $Id$
 
-import sys, os, email, smtplib
+import sys, os, email, smtplib, mimify
 
 # All this will be used to create the response mail
 from email import Encoders
@@ -23,6 +23,7 @@ from email.MIMEAudio import MIMEAudio
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEImage import MIMEImage
 from email.MIMEText import MIMEText
+from mimify import mime_decode_header
 
 import MailHandler, UrlHandler, GoogleHandler, PipeHandler, NewsHandler
 
@@ -42,7 +43,7 @@ if __name__ == "__main__":
     mesg = read_email()
 
     sender  = mesg.get('From')
-    subject = mesg.get('Subject')
+    subject = mime_decode_header(mesg.get('Subject'))
     mesg_id = mesg.get('Message-Id')
     date    = mesg.get('Date')
     dest    = mesg.get('To')
