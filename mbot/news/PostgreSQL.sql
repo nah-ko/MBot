@@ -15,7 +15,7 @@ CREATE SEQUENCE photo_test_id_seq;
 CREATE TABLE news_test (
   id INT4 DEFAULT nextval('news_test_id_seq'),
   site text,
-  DATE text,
+  DATE timestamp,
   de text,
   sujet text,
   message text,

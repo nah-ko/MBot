@@ -16,7 +16,7 @@ CREATE TABLE photo_test (
 CREATE TABLE news_test (
   id int(100) unsigned NOT NULL auto_increment,
   site text,
-  date text,
+  date datetime,
   de text,
   sujet text,
   message text,
