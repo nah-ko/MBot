@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# $Id$
+
 import Image, os, re, sys
 import MySQLdb, pg
 import ConfigParser
@@ -98,9 +100,9 @@ def main():
 	    dbpg = pg.connect(dbname=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
 	    if id_img != 0:
 	       image_id = migrate_photo(id_img)
-	       req  = dbpg.query("insert into %s (site, date, de, sujet, message, id_img) values ('%s', '%s', '%s', '%s', '%s', '%d')" % (news_table, site, date, de, re.escape(sujet), re.escape(message), image_id))
 	    else:
-	       req  = dbpg.query("insert into %s (site, date, de, sujet, message, id_img) values ('%s', '%s', '%s', '%s', '%s', '%d')" % (news_table, site, date, de, re.escape(sujet), re.escape(message), id_img))
+	       image_id = id_img
+	    req  = dbpg.query("insert into %s (site, date, de, sujet, message, id_img) values ('%s', '%s', '%s', '%s', '%s', '%d')" % (news_table, site, date, de, re.escape(sujet), re.escape(message), image_id))
 	    news_id = dbpg.query("select currval('%s')" % news_seq_table).getresult()[0][0]
 	    dbpg.close()
 	    print "News \"%s\" transfered with id #%d" % (sujet, news_id)

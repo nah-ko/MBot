@@ -33,7 +33,6 @@ class NewsHandler(MailHandler.MailHandler):
 			myquery = "insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (self.PHOTO_TBL, desc, db.escape_string(filedata), db.escape_string(TNfiledata), filename, filesize, filetype)
 			mycur	= db.cursor()
 			mycur.execute(myquery)
-			id	= db.insert_id()
 		elif self.DB_TYPE == 'postgresql':
 			db.query("begin")
 			img_LO   = db.locreate(INV_WRITE)
@@ -46,9 +45,7 @@ class NewsHandler(MailHandler.MailHandler):
 			TNimg_LO.write(filedata)
 			TNimg_LO.close()
 			db.query("commit")
-			id        = db.query("select currval('%s')" % self.PHOTO_TBLSQ).getresult()[0][0]
-			# getresult()[0][0] <-- nedded because query
-			# result return a tuple which contains (value,?) where «value» is the ID.
+		id      = getid(db, self.PHOTO_TBLSQ)
 		myquery	= "update %s set id_img='%d' where id='%d'" % (self.NEWS_TBL, id, news_id)
 		if self.DB_TYPE == 'mysql':
 			mycur	= db.cursor()
@@ -74,6 +71,17 @@ class NewsHandler(MailHandler.MailHandler):
 
 		return site
 
+	def getid(self, conn, table=None):
+		if self.DB_TYPE == 'mysql':
+			id = conn.insert_id()
+		elif self.DB_TYPE == 'postgresql':
+			id = conn.query("select currval('%s')" % table).getresult()[0][0]
+			# getresult()[0][0] <-- nedded because query
+			# result return a tuple which contains (value,?)
+			# where «value» is the ID.
+
+		return id
+	
 	def add_news(self, text, img_id=0):
 		if self.DB_TYPE == 'mysql':
 			db = MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
@@ -87,12 +95,9 @@ class NewsHandler(MailHandler.MailHandler):
 		if self.DB_TYPE == 'mysql':
 			mycur	= db.cursor()
 			mycur.execute(myquery)
-			self.id	= db.insert_id()
 		elif self.DB_TYPE == 'postgresql':
 			req     = db.query(myquery)
-			self.id   = db.query("select currval('%s')" % self.NEWS_TBLSQ).getresult()[0][0]
-			# getresult()[0][0] <-- nedded because query
-			# result return a tuple which contains (value,?) where «value» is the ID.
+		self.id	= getid(db, self.NEWS_TBLSQ)
 		db.close()
 		return self.id
 
