@@ -29,4 +29,5 @@ mbot.conf.5: mbot.conf.5.sgml
 
 clean:
 	-rm *~
+	-rm mbot.1 mbot.conf.5
 	-rm $(DOCUMENT).tex $(DOCUMENT).html $(DOCUMENT).ps $(DOCUMENT).pdf

@@ -1,4 +1,4 @@
-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <refentry>
   <refentryinfo>
     <address>
@@ -21,7 +21,7 @@
   </refmeta>
 
   <refnamediv>
-    <refname>mbot.con</refname>
+    <refname>mbot.conf</refname>
     <refpurpose>
       mbot configuration file
     </refpurpose>
@@ -34,7 +34,7 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>description</title>
+    <title>Description</title>
     <para>
       <command>mbot.conf</command> is organized in sections where you
       can associate handlers to mails.
@@ -84,6 +84,260 @@
       </variablelist>
     </para>
 
+  </refsect1>
+
+  <refsect1>
+    <title>Default and common options</title>
+    <para>
+      For each section we have a common option who's:
+      <variablelist>
+      <varlistentry>
+        <term>HANDLER</term>
+        <listitem>
+          <para>
+	  This option define for the current section which Handler will
+	  be used.
+	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>WHITE_LIST</term>
+        <listitem>
+          <para>
+	  Here we define which are the e-mail addresses allowed to use
+	  associated Handler. Only e-mails are stored here, like this:
+	  name@domain.tld. If no BLACKLIST is defined then the sender MUST
+	  be in this list otherwise mail will be rejected
+	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>BLACK_LIST</term>
+        <listitem>
+          <para>
+	  This list contains blocked emails. If sender is in this list,
+	  mbot won't be allowed to handle the request.
+	  If BLACK_LIST exists but not WHITE_LIST then every sender
+	  who's not in this list will be allowed to use this Handler.
+	  The format of the list is:
+	  ["email@domain.tld", "email2@anotherdom.tld"]. It's the same
+	  as WHITE_LIST.
+	  </para>
+        </listitem>
+      </varlistentry>
+      </variablelist>
+    </para>
+    <para>
+      Default options:
+      <variablelist>
+      <varlistentry>
+        <term>MBOT_ADDRESS</term>
+        <listitem>
+          <para>
+	  Email address used in the response.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LOG_LEVEL</term>
+        <listitem>
+          <para>
+	  Here we tell the Logger which level we want to log to
+	  syslog. Those levels are, from lower to higher, emerg - alert - crit
+	  - err - warning - notice - info - debug.
+          </para>
+        </listitem>
+      </varlistentry>
+      </variablelist>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Handler's options</title>
+    <para>
+      <variablelist>
+
+        <varlistentry>
+          <term>GoogleHandler's options:</term>
+	  <listitem>
+	    <variablelist>
+	      <varlistentry>
+	        <term>HOST</term>
+		  <listitem>
+	            <para>
+	              This is the first for this Handler, it define the host
+	              for the searching engine.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>BASE_URL</term>
+		  <listitem>
+	            <para>
+	              Define here the string that is usually used by
+                      the searching engine.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	  </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>UrlHandler's options:</term>
+	  <listitem>
+	    <variablelist>
+	      <varlistentry>
+	        <term>MAILSIZE</term>
+		  <listitem>
+	            <para>
+	              This option define the maximum mail size while
+		      mbot fetch url, sender will receive error message
+		      if mail size exceed this value.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>ATTSIZE</term>
+		  <listitem>
+	            <para>
+	              For each attachement we define a size behind which
+		      mbot will raise an error.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	  </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>NewsHandler's options:</term>
+	  <listitem>
+	    <variablelist>
+	      <varlistentry>
+	        <term>HOST</term>
+		  <listitem>
+	            <para>
+	              This is the FQDN for the database server.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>DB</term>
+		  <listitem>
+	            <para>
+	              The name of the database.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>DB_USER</term>
+		  <listitem>
+	            <para>
+	              Username to add entry into database.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>NEWS_TBL</term>
+		  <listitem>
+	            <para>
+	              Name of the table used by the Handler.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>NEWS_TBLSQ</term>
+		  <listitem>
+	            <para>
+	              Name of the sequence table used by the Handler.
+		      Usually used with Postgres server's.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>ATTACH_PATH</term>
+		  <listitem>
+	            <para>
+		      Used if sender attach an image with his mail, in
+		      this directory mbot will resize image to store it
+		      as normal and thumbnail size into database.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>tnX and tnY</term>
+		  <listitem>
+	            <para>
+		      These are the options for thumbnail resizing.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>SITE</term>
+		  <listitem>
+	            <para>
+		      This is a list in which mbot will select the site
+		      according to the receiver email. It will be used
+		      to feed the database.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>PHOTO_TBL</term>
+		  <listitem>
+	            <para>
+	              This option is optionnal, it will be used only if
+		      you want to have pictures associated to news.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <variablelist>
+	      <varlistentry>
+	        <term>PHOTO_TBLSQ</term>
+		  <listitem>
+	            <para>
+	              Name of the sequence table used by the Handler for
+		      the photo table.
+		      Usually used with Postgres server's.
+	            </para>
+	          </listitem>
+	      </varlistentry>
+	    </variablelist>
+	  </listitem>
+        </varlistentry>
+
+      </variablelist>
+	Note that there is no option for PipeHandler.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Bugs</title>
+    <para>
+      Please report bugs to the authors.
+    </para>
   </refsect1>
 
   <refsect1>

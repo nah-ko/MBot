@@ -1,4 +1,4 @@
-<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <refentry>
   <refentryinfo>
     <address>
@@ -36,7 +36,7 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>description</title>
+    <title>Description</title>
     <para>
       <command>mbot</command> is a generic purpose mail robot, written
       in python. The first goal while writting this piece of software
@@ -87,7 +87,7 @@
   </refsect1>
 
   <refsect1>
-    <title>options</title>
+    <title>Options</title>
     <variablelist>
       <varlistentry>
         <term><option>-h</option></term>
@@ -98,14 +98,15 @@
       <varlistentry>
         <term><option>-c</option></term>
         <listitem>
-          <para>specifies the configuration file to use.</para>
+          <para>specifies the configuration file to use. If omitted mbot
+	  will look for it in his own directory.</para>
         </listitem>
       </varlistentry>
     </variablelist>
   </refsect1>
 
   <refsect1>
-    <title>install</title>
+    <title>Install</title>
     <para>
 
     To install that mail bot, just add a line in your mail alias file,
