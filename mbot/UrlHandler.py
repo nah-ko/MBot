@@ -20,18 +20,18 @@ class UrlHandler(MailHandler.MailHandler):
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
 
-	self.log.notice("[UrlHandler]: read_conf")
-	self.MAILSIZE = int(ConfObj.get(SECTION, 'mailsize'))
-	self.ATTSIZE  = int(ConfObj.get(SECTION, 'attsize'))
+        self.log.notice("[UrlHandler]: read_conf")
+        self.MAILSIZE = int(ConfObj.get(SECTION, 'mailsize'))
+        self.ATTSIZE  = int(ConfObj.get(SECTION, 'attsize'))
 
     def handle(self, body):
         """ The body may contain one url per line """
         result    = []
-	glob_size = 0
+        glob_size = 0
 
-	self.log.notice("[UrlHandler]")
+        self.log.notice("[UrlHandler]")
         for line in body.split():
-	    if glob_size < self.MAILSIZE:
+            if glob_size < self.MAILSIZE:
                 if line != '' and line is not None:
                     (p, server, path, params, q, f) = urlparse.urlparse(line)
                     url   = urlparse.urlunparse((p, server,
@@ -56,13 +56,16 @@ class UrlHandler(MailHandler.MailHandler):
                             "[UrlHandler]: Retreiving url '%s'" % url)
                     else:
                         type = "text/plain"
-                        data = "Attachment size exceed %s" % self.ATTSIZE
+                        data = "Attachment size exceed %s (%d)" % (self.ATTSIZE,
+                                                                   size) + \
+                               " for '%s'" % url
                         self.log.notice("[UrlHandler]: %s" % data)
                         result.append((type, data))
             else:
                 type = "text/plain"
-                data = "Mail size exceed %s" % self.MAILSIZE
-                self.log.notice("[UrlHandler]: %s" % data)
+                data = "Mail size exceed %s (%d)" % (self.MAILSIZE,
+                                                     glob_size)
+                self.log.notice("[UrlHandler]: %s" % data
                 result.append((type, data))
 
         return result
