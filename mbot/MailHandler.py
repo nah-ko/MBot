@@ -23,11 +23,7 @@ class MailHandler:
         self.sender  = sender
         self.dest    = dest
 
-    def read_conf(self, config):
-	''' Config parser '''
-	pass
-
-    def read_conf2(self, config, properties):
+    def read_conf(self, config, properties):
         ''' Config parser '''
 	self.log.debug("[MailHandler]: read_conf2")
         for p in properties:

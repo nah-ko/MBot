@@ -14,6 +14,8 @@ import MailHandler
 import sys, os, email, re, Image
 import ConfigParser
 
+from MailHandler import MailHandler
+
 # This class does not provides SGBD specific code, see MyNewsHandler
 # and PgNewsHandler
 class NewsHandler(MailHandler.MailHandler):
@@ -22,7 +24,7 @@ class NewsHandler(MailHandler.MailHandler):
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
         self.log.notice("[NewsHandler]: read_conf")
-        self.read_conf2(ConfObj,
+        MailHandler.read_conf(self, ConfObj,
                        ['host', 'db', 'db_user', 'db_pass',
                         'photo_tbl', 'photo_tblsq',
                         'news_tbl', 'news_tblsq',

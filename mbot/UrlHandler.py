@@ -12,13 +12,16 @@
 import MailHandler
 import string, urllib, mimetools, urlparse
 
+from MailHandler import MailHandler
+
 class UrlHandler(MailHandler.MailHandler):
     "Handle getting url given in mail"
     
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
         self.log.notice("[UrlHandler]: read_conf")
-        self.read_conf2(ConfObj, ['mailsize', 'attsize'])
+        MailHandler.read_conf(self, ConfObj,
+	                      ['mailsize', 'attsize'])
 
     def handle(self, body):
         """ The body may contain one url per line """

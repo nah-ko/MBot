@@ -13,13 +13,16 @@ import MailHandler
 import string, urllib, httplib, mimetools
 import ConfigParser
 
+from MailHandler import MailHandler
+
 class GoogleHandler(MailHandler.MailHandler):
     "Handle getting url given in mail"
     
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
         self.log.notice("[GoogleHandler]: read_conf")
-        self.read_conf2(ConfObj, ['host', 'base_url'])
+        MailHandler.read_conf(self, ConfObj,
+	                      ['host', 'base_url'])
 
     def handle(self, body):
         """ The body may contain one url per line """
