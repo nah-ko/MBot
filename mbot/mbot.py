@@ -137,6 +137,7 @@ def main():
 	resp['To']          = sender
 	resp['In-Reply-To'] = mesg_id
 	resp['Date']        = formatdate(time.mktime(time.localtime()), True)
+	resp['From']        = dest
 
 	# we initialize a handler corresponding to the given subject
 	# first we create a dict hs which associate handler with subject
