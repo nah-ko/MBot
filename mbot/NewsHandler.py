@@ -14,9 +14,9 @@ import sys,os,email
 import MySQLdb
 
 HOST	= "localhost"
-DB 	= "mydbs"
-DB_USER = "admin"
-DB_PASS = "algonquin"
+DB 	= "db"
+DB_USER = "user"
+DB_PASS = "pass"
 
 ATTACH_PATH = "/tmp/"
 
@@ -72,21 +72,20 @@ class NewsHandler(MailHandler.MailHandler):
 		if type(body) == type(""):
 			id_news = self.add_news(body)
 		else:
-			for part in body:
-				if type(part) != type(""):
-					maintype, subtype = part.get_content_type().split('/',1)
-					if maintype == "image":
-						file = ATTACH_PATH + part.get_filename()
-						f = open(file, "w")
-						f.write(part.get_payload(decode=1))
-						f.close()
-						filesize = os.stat(file).st_size
-						id_img = self.add_img(part.get_filename(), part.get_content_type(), part.get_payload(decode=1), filesize)
-				elif type(part) == type(""):
-					if id_img != 0:
-						id_news = self.add_news(part, id_img)
-					else:
-						id_news = self.add_news(part)
+			if type(body) == type(""):
+				if id_img != 0:
+					id_news = self.add_news(body, id_img)
+				else:
+					id_news = self.add_news(body)
+			else:
+				maintype, subtype = body.get_content_type().split('/',1)
+				if maintype == "image":
+					file = ATTACH_PATH + body.get_filename()
+					f = open(file, "w")
+					f.write(body.get_payload(decode=1))
+					f.close()
+					filesize = os.stat(file).st_size
+					id_img = self.add_img(body.get_filename(), body.get_content_type(), body.get_payload(decode=1), filesize)
 		result	= "Automatic response:\n"
 		result	= result + "News #%d added with image #%d (0 for none)" % (id_news, id_img)
 		return [('text/plain', result)]
