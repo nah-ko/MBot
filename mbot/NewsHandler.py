@@ -11,7 +11,7 @@
 
 import MailHandler
 import sys, os, email
-import MySQLdb, re
+import MySQLdb, re, Image
 
 HOST	= "localhost"
 DB 	= "db"
@@ -19,19 +19,21 @@ DB_USER = "user"
 DB_PASS = "pass"
 
 ATTACH_PATH = "/tmp/"
+tnX	= 120
+tnY	= 90
 
 class NewsHandler(MailHandler.MailHandler):
 
-	def add_img(self, filename, filetype, filedata, filesize):
+	def add_img(self, filename, filetype, filedata, TNfiledata, filesize):
 		db = MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
 		news_id	= self.id
-		TABLE	= "bindat"
+		TABLE	= "photo_test"
 		desc	= "[News] " + filename
-		myquery = "insert into %s (description,bin_data,filename,filesize,filetype) values ('%s','%s','%s','%d','%s')" % (TABLE, desc, db.escape_string(filedata), filename, filesize, filetype)
+		myquery = "insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (TABLE, desc, db.escape_string(filedata), db.escape_string(TNfiledata), filename, filesize, filetype)
 		mycur	= db.cursor()
 		mycur.execute(myquery)
 		id	= db.insert_id()
-		TABLE	= "news"
+		TABLE	= "news_test"
 		myquery	= "update %s set id_img='%d' where id='%d'" % (TABLE, id, news_id)
 		mycur   = db.cursor()
 		mycur.execute(myquery)
@@ -53,7 +55,7 @@ class NewsHandler(MailHandler.MailHandler):
 		date 	= self.date
 		sender 	= self.sender
 		dest 	= self.domext(self.dest)
-		TABLE 	= "news"
+		TABLE 	= "news_test"
 		if dest == "nah-ko.org":
 			SITE	= "test"
 		elif dest == "rein-team.darktech.org":
@@ -80,12 +82,23 @@ class NewsHandler(MailHandler.MailHandler):
 			else:
 				maintype, subtype = body.get_content_type().split('/',1)
 				if maintype == "image":
-					file = ATTACH_PATH + body.get_filename()
-					f = open(file, "w")
+					file	= ATTACH_PATH + body.get_filename()
+					TNfile	= ATTACH_PATH + "TN_" + body.get_filename()
+					f	= open(file, "w")
 					f.write(body.get_payload(decode=1))
 					f.close()
+					img	= Image.open(file)
+					format	= img.format
+				        img.thumbnail((tnX,tnY))
+				        img.save(TNfile,format)         
+				        f	= open(TNfile, "r")
+				        TNdata  = f.read()   
+				        f.close()            
 					filesize = os.stat(file).st_size
-					id_img = self.add_img(body.get_filename(), body.get_content_type(), body.get_payload(decode=1), filesize)
+					id_img	= self.add_img(body.get_filename(), body.get_content_type(), body.get_payload(decode=1), TNdata, filesize)
+					os.remove(file)
+					os.remove(TNfile)
+
 		result	= "Automatic response:\n"
 		result	= result + "News #%d added with image #%d (0 for none)" % (id_news, id_img)
 		return [('text/plain', result)]
