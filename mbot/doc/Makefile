@@ -4,7 +4,15 @@ SOURCE=$(wildcard *.lyx)
 DOCUMENT=$(basename $(SOURCE))
 TARGET=$(SOURCE:.lyx=.pdf) $(SOURCE:.lyx=.html)
 
-all: $(TARGET)
+all: man $(TARGET)
+
+man: mbot.1 mbot.conf.5
+
+mbot.1: mbot.1.sgml
+	docbook-to-man $? > $@ 2>&1
+
+mbot.conf.5: mbot.conf.5.sgml
+	docbook-to-man $? >$@ 2>&1
 
 %.ps:%.lyx
 	lyx -e ps $<

@@ -1,0 +1,105 @@
+<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+<refentry>
+  <refentryinfo>
+    <address>
+      <email>dim@tuxfamily.org</email>
+    </address>
+    <author>
+      <firstname>Dimitri</firstname>
+      <surname>Fontaine</surname>
+    </author>
+    <date>Décembre 2003</date>
+    <copyright>
+      <year>2003</year>
+      <holder>Dimitri Fontaine</holder>
+    </copyright>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>mbot.conf</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>mbot.con</refname>
+    <refpurpose>
+      mbot configuration file
+    </refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>mbot.conf</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>description</title>
+    <para>
+      <command>mbot.conf</command> is organized in sections where you
+      can associate handlers to mails.
+    </para>
+
+    <para>
+      When mbot receive a mail, it will search for a section having a
+      name which match the mail subject, then use the associated
+      handler. So the name of the section will depend on the subject
+      to use, and the parameters to be defined in this section will
+      depend on the selected handler.
+    </para>
+
+    <para>
+      Here is a list of available handlers:
+      <variablelist>
+      <varlistentry>
+        <term>GoogleHandler</term>
+        <listitem>
+          <para>Used to perform some search with the well known search
+          engine</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>UrlHandler</term>
+        <listitem>
+          <para>This one allows to download some url and attach its
+          content to the return mail, with the mime type properly
+          set.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>NewsHandler</term>
+        <listitem>
+          <para>You can also send some news (with images) to mbot, it
+          will fill your database with it. Currently supported RDBMs
+          are PostgreSQL and MySQL, so you will have to choose between
+          PgNewsHandler and MyNewsHandler.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>PipeHandler</term>
+        <listitem>
+          <para>This one will make mbot call an arbitrary given command!</para>
+        </listitem>
+      </varlistentry>
+      </variablelist>
+    </para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+    <para>
+      <command>mbot</command>(1)
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Authors</title>
+    <para>
+      <command>mbot</command> was writen by Dimitri Fontaine
+      <email>dim@tuxfamily.org</email> and Christophe Truffier
+      <email>nah-ko@tuxfamily.org</email>.
+    </para>
+  </refsect1>
+  
+</refentry>
