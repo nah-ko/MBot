@@ -65,7 +65,7 @@ class UrlHandler(MailHandler.MailHandler):
                 type = "text/plain"
                 data = "Mail size exceed %s (%d)" % (self.MAILSIZE,
                                                      glob_size)
-                self.log.notice("[UrlHandler]: %s" % data
+                self.log.notice("[UrlHandler]: %s" % data)
                 result.append((type, data))
 
         return result
