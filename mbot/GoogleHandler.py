@@ -21,11 +21,8 @@ class GoogleHandler(MailHandler.MailHandler):
     def read_conf(self, ConfObj):
         ''' Getting config options for this handler '''
 
-	for option in ConfObj.options(SECTION):
-	     if option == 'host':
-		self.HOST = ConfObj.get(SECTION,option)
-	     elif option == 'base_url':
-		self.BASE_URL = ConfObj.get(SECTION,option)
+	self.HOST = ConfObj.get(SECTION,'host')
+	self.BASE_URL = ConfObj.get(SECTION,'base_url')
 
     def handle(self, body):
         """ The body may contain one url per line """
