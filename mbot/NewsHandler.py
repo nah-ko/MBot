@@ -42,7 +42,7 @@ class NewsHandler(MailHandler.MailHandler):
 			img_LO.write(filedata)
 			img_LO.close()
 			TNimg_LO.open(INV_WRITE)
-			TNimg_LO.write(filedata)
+			TNimg_LO.write(TNfiledata)
 			TNimg_LO.close()
 			db.query("commit")
 		id      = self.getid(db, self.PHOTO_TBLSQ)
@@ -142,7 +142,7 @@ class NewsHandler(MailHandler.MailHandler):
 					f.close()
 					img	= Image.open(file)
 					format	= img.format
-				        img.thumbnail((self.tnX,self.tnY))
+				        img.thumbnail((int(self.tnX),int(self.tnY)))
 				        img.save(TNfile,format)         
 				        f	= open(TNfile, "r")
 				        TNdata  = f.read()   
