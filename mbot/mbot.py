@@ -44,6 +44,7 @@ if __name__ == "__main__":
     sender  = mesg.get('From')
     subject = mesg.get('Subject')
     mesg_id = mesg.get('Message-Id')
+    date    = mesg.get('Date')
 
     if mesg.is_multipart():
         body = []

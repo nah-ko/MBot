@@ -15,8 +15,8 @@ import sys,os,email,MySQLdb
 HOST	= "localhost"
 DB 	= "mydbs"
 TABLE 	= "news"
-DB_USER = "user"
-DB_PASS = "pass"
+DB_USER = "admin"
+DB_PASS = "algonquin"
 SITE 	= "test"
 
 ATTACH_PATH = "/tmp/"
@@ -24,13 +24,11 @@ ATTACH_PATH = "/tmp/"
 class NewsHandler(MailHandler.MailHandler):
 
 	def add_news(self, text):
-		db = MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
-		#query = "select * from news where site='test';"
-		date = "Dimanche 22 Avril 2003"
-		sender = "\"Christophe Truffier\" <ctruffier@cvf.fr>"
-		query = "insert into " + TABLE + " values('','" + SITE + "','" + date + "','" + sender + "','" + text + "')"
+		db 	= MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
+		date 	= self.date
+		sender 	= self.sender
+		query 	= "insert into " + TABLE + " values('','" + SITE + "','" + date + "','" + sender + "','" + text + "')"
 		print query
-		#insert into mailnews values('','$SITE','$DATE','$FROM','$BODY')
 		db.close()
 
 	def handle(self, body):
@@ -38,7 +36,6 @@ class NewsHandler(MailHandler.MailHandler):
 
 		for part in body:
 			if type(part) == type(""):
-				#news = part
 				self.add_news(part)
 			else:
 				maintype, subtype = part.get_content_type().split('/',1)
