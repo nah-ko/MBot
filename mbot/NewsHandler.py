@@ -28,10 +28,9 @@ class NewsHandler(MailHandler.MailHandler):
 		elif self.DB_TYPE == 'postgresql':
 			db = pg.connect(dbname=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
 		news_id	= self.id
-		TABLE	= "photo_test"
 		desc	= "[News] " + filename
 		if self.DB_TYPE == 'mysql':
-			myquery = "insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (TABLE, desc, db.escape_string(filedata), db.escape_string(TNfiledata), filename, filesize, filetype)
+			myquery = "insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (self.PHOTO_TBL, desc, db.escape_string(filedata), db.escape_string(TNfiledata), filename, filesize, filetype)
 			mycur	= db.cursor()
 			mycur.execute(myquery)
 			id	= db.insert_id()
@@ -39,7 +38,7 @@ class NewsHandler(MailHandler.MailHandler):
 			db.query("begin")
 			img_LO   = db.locreate(INV_WRITE)
 			TNimg_LO = db.locreate(INV_WRITE)
-			req      = db.query("insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (TABLE, desc, img_LO.oid, TNimg_LO.oid, filename, filesize, filetype))
+			req      = db.query("insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (self.PHOTO_TBL, desc, img_LO.oid, TNimg_LO.oid, filename, filesize, filetype))
 			img_LO.open(INV_WRITE)
 			img_LO.write(filedata)
 			img_LO.close()
@@ -47,10 +46,10 @@ class NewsHandler(MailHandler.MailHandler):
 			TNimg_LO.write(filedata)
 			TNimg_LO.close()
 			db.query("commit")
-			SEQ_TABLE = TABLE + '_id_seq'
-			id        = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0][0]
-		TABLE	= "news_test"
-		myquery	= "update %s set id_img='%d' where id='%d'" % (TABLE, id, news_id)
+			id        = db.query("select currval('%s')" % self.PHOTO_TBLSQ).getresult()[0][0]
+			# getresult()[0][0] <-- nedded because query
+			# result return a tuple which contains (value,?) where «value» is the ID.
+		myquery	= "update %s set id_img='%d' where id='%d'" % (self.NEWS_TBL, id, news_id)
 		if self.DB_TYPE == 'mysql':
 			mycur	= db.cursor()
 			mycur.execute(myquery)
@@ -59,7 +58,7 @@ class NewsHandler(MailHandler.MailHandler):
 		db.close()
 		return id
 	
-	def domext(self,e_mail):
+	def getsite(self,e_mail):
 		befat, aftat = e_mail.split('@')
 
 		if len(aftat.split('>')) != 1:
@@ -67,7 +66,13 @@ class NewsHandler(MailHandler.MailHandler):
 		elif len(aftat.split('>')) == 1:
 			A = aftat.split('>')
 			dom = A[0]
-		return dom
+		try:
+		   dico_site = eval(self.SITE)
+		   site      = dico_site[dom]
+		except KeyError, SyntaxError:
+		   site = 'test'
+
+		return site
 
 	def add_news(self, text, img_id=0):
 		if self.DB_TYPE == 'mysql':
@@ -77,21 +82,17 @@ class NewsHandler(MailHandler.MailHandler):
 		date 	= self.date
 		sender 	= self.sender
 		subject	= re.escape(self.params)
-		dest 	= self.domext(self.dest)
-		TABLE 	= "news_test"
-		if dest == "nah-ko.org":
-			SITE	= "test"
-		elif dest == "rein-team.darktech.org":
-			SITE	= "reinteam"
-		myquery = "insert into %s (site,date,de,sujet,message,id_img) values('%s','%s','%s','%s','%s','%d')" % (TABLE, SITE, date, sender, subject, re.escape(text), img_id)
+		SITE 	= self.getsite(self.dest)
+		myquery = "insert into %s (site,date,de,sujet,message,id_img) values('%s','%s','%s','%s','%s','%d')" % (self.NEWS_TBL, SITE, date, sender, subject, re.escape(text), img_id)
 		if self.DB_TYPE == 'mysql':
 			mycur	= db.cursor()
 			mycur.execute(myquery)
 			self.id	= db.insert_id()
 		elif self.DB_TYPE == 'postgresql':
 			req     = db.query(myquery)
-			SEQ_TABLE = TABLE + '_id_seq'
-			self.id   = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0][0]
+			self.id   = db.query("select currval('%s')" % self.NEWS_TBLSQ).getresult()[0][0]
+			# getresult()[0][0] <-- nedded because query
+			# result return a tuple which contains (value,?) where «value» is the ID.
 		db.close()
 		return self.id
 
@@ -103,6 +104,11 @@ class NewsHandler(MailHandler.MailHandler):
 		self.DB_USER     = ConfObj.get(SECTION,'db_user')
 		self.DB_PASS     = ConfObj.get(SECTION,'db_pass')
 		self.DB_TYPE     = ConfObj.get(SECTION,'db_type')
+		self.PHOTO_TBL   = config.get(section,'photo_tbl')
+		self.PHOTO_TBLSQ = config.get(section,'photo_tblsq')
+		self.NEWS_TBL    = config.get(section,'news_tbl')
+		self.NEWS_TBLSQ  = config.get(section,'news_tblsq')
+		self.SITE        = config.get(section,'site')
 		self.ATTACH_PATH = ConfObj.get(SECTION,'attach_path')
 		self.tnX         = ConfObj.get(SECTION,'tnx')
 		self.tnY         = ConfObj.get(SECTION,'tny')
