@@ -54,13 +54,14 @@ class NewsHandler(MailHandler.MailHandler):
 		db 	= MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
 		date 	= self.date
 		sender 	= self.sender
+		subject	= self.params
 		dest 	= self.domext(self.dest)
 		TABLE 	= "news_test"
 		if dest == "nah-ko.org":
 			SITE	= "test"
 		elif dest == "rein-team.darktech.org":
 			SITE	= "reinteam"
-		myquery = "insert into %s (site,date,de,message,id_img) values('%s','%s','%s','%s','%d')" % (TABLE, SITE, date, sender, re.escape(text), img_id)
+		myquery = "insert into %s (site,date,de,sujet,message,id_img) values('%s','%s','%s','%s','%s','%d')" % (TABLE, SITE, date, sender, subject, re.escape(text), img_id)
 		mycur	= db.cursor()
 		mycur.execute(myquery)
 		self.id	= db.insert_id()
@@ -70,9 +71,11 @@ class NewsHandler(MailHandler.MailHandler):
 	def handle(self, body):
 		"Get news from text and attachment if present"
 
+		result	= "Automatic response to: " + self.params + "\n"
 		id_img = id_news = 0
 		if type(body) == type(""):
 			id_news = self.add_news(body)
+			result	= result + "News #%d added" % id_news
 		else:
 			if type(body) == type(""):
 				if id_img != 0:
@@ -98,7 +101,6 @@ class NewsHandler(MailHandler.MailHandler):
 					id_img	= self.add_img(body.get_filename(), body.get_content_type(), body.get_payload(decode=1), TNdata, filesize)
 					os.remove(file)
 					os.remove(TNfile)
+					result	= result + "Image #%d added" % id_img
 
-		result	= "Automatic response:\n"
-		result	= result + "News #%d added with image #%d (0 for none)" % (id_news, id_img)
 		return [('text/plain', result)]

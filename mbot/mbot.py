@@ -71,7 +71,7 @@ if __name__ == "__main__":
         h = GoogleHandler.GoogleHandler(subject[6:])
         
     elif subject.find('news') == 0:
-        h = NewsHandler.NewsHandler(subject, dest, sender, date)
+        h = NewsHandler.NewsHandler(subject[4:], dest, sender, date)
         
     elif subject.find('|') == 0:
         h = PipeHandler.PipeHandler(subject[1:])
