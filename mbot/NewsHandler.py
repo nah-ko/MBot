@@ -39,7 +39,7 @@ class NewsHandler(MailHandler.MailHandler):
 			db.query("begin")
 			img_LO   = db.locreate(INV_WRITE)
 			TNimg_LO = db.locreate(INV_WRITE)
-			myquery  = "insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (TABLE, desc, img_LO.oid, TNimg_LO.oid, filename, filesize, filetype)
+			req      = db.query("insert into %s (description,img_data,tnimg_data,filename,filesize,filetype) values ('%s','%s','%s','%s','%d','%s')" % (TABLE, desc, img_LO.oid, TNimg_LO.oid, filename, filesize, filetype))
 			img_LO.open(INV_WRITE)
 			img_LO.write(filedata)
 			img_LO.close()
@@ -48,14 +48,14 @@ class NewsHandler(MailHandler.MailHandler):
 			TNimg_LO.close()
 			db.query("commit")
 			SEQ_TABLE = TABLE + '_id_seq'
-			id	 = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0]
+			id        = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0][0]
 		TABLE	= "news_test"
+		myquery	= "update %s set id_img='%d' where id='%d'" % (TABLE, id, news_id)
 		if self.DB_TYPE == 'mysql':
-			myquery	= "update %s set id_img='%d' where id='%d'" % (TABLE, id, news_id)
 			mycur	= db.cursor()
 			mycur.execute(myquery)
 		elif self.DB_TYPE == 'postgresql':
-			req     = db.query("update %s set id_img='%d' where id='%d'" % (TABLE, id, news_id))
+			req     = db.query(myquery)
 		db.close()
 		return id
 	
@@ -91,7 +91,7 @@ class NewsHandler(MailHandler.MailHandler):
 		elif self.DB_TYPE == 'postgresql':
 			req     = db.query(myquery)
 			SEQ_TABLE = TABLE + '_id_seq'
-			self.id   = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0]
+			self.id   = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0][0]
 		db.close()
 		return self.id
 
