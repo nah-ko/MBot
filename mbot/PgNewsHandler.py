@@ -35,10 +35,22 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         self.log.notice("[PgNewsHandler]: execQuery")
         db      = self.dbconn()
         req     = db.query(sql)
+        self.log.debug("[PgNewsHandler]: execQuery, req = %s" % req)
         self.id = self.getid(db, self.news_tblsq)
         db.close()
 
         return self.id
+
+    def execReadQuery(self, sql):
+        """ Execute the given query """
+
+        self.log.notice("[PgNewsHandler]: execReadQuery")
+        db      = self.dbconn()
+        req     = db.query(sql).dictresult()
+        self.log.debug("[PgNewsHandler]: execReadQuery, req = %s" % req)
+        db.close()
+
+        return req
 
     def getid(self, conn, table=None):
         """ Get the next available news Id """

@@ -49,6 +49,24 @@ class NewsHandler(MailHandler):
 
         self.log.debug("[NewsHandler]: getsite -> site='%s'" % site)
         return site
+
+    def getlist(self):
+	""" Get the whole entry list """
+
+	self.log.notice("[NewsHandler]: getlist")
+	myquery = """
+	SELECT id, id_img, site, date, de, sujet FROM %s
+	""" % self.news_tbl
+	self.log.debug("[NewsHandler]: myquery = %s" % myquery)
+	list = self.execReadQuery(myquery)
+	text = "\tid\t|\tid_img\t|\tsite\t|\tdate\t|\tde\t|\tsujet\t\n"
+	for (ID, ID_IMG, SITE, DATE, DE, SUJET) in list:
+	    text = text +
+	           "\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\n" % (ID,
+		   ID_IMG, SITE, DATE, DE, SUJET)
+	self.log.debug("[NewsHandler]: list = %s" % list)
+
+	return text
         
     def add_news(self, text, img_id=0):
         self.log.notice("[NewsHandler]: add_news")
@@ -90,7 +108,7 @@ class NewsHandler(MailHandler):
         else:
             id_news = self.add_news(text)
 
-        result = " #%d added" % id_news
+        result = "Entry #%d added" % id_news
         
         self.log.debug("[NewsHandler]: result='%s' for '%s'" \
                        % (result, self.section))
@@ -110,77 +128,85 @@ class NewsHandler(MailHandler):
 
         self.log.notice("[NewsHandler]: Use [%s] section" % self.section)
 
-        # Handle simple text messages
-        if not self.multipart_mesg:
-            id_news, res = self.handle_text_part(id_img, body)
-	    result       = result + res
+	# Just get data list and stop.
+	import string
+
+	if string.strip(self.params)[:7] == 'getlist':
+	    self.log.debug("[NewsHandler]: found «getlist» buzzword")
+	    result = result + self.getlist()
+
+	else:
+	    # Handle simple text messages
+	    if not self.multipart_mesg:
+		id_news, res = self.handle_text_part(id_img, body)
+		result       = result + res
             
-        # Handle multipart messages
-        else:
-            content_type      = body.get_content_type()
-            maintype, subtype = content_type.split('/',1)
+	    # Handle multipart messages
+	    else:
+		content_type      = body.get_content_type()
+		maintype, subtype = content_type.split('/',1)
 
-            self.log.debug("[NewsHandler]: maintype='%s'" % maintype +
-                           " subtype='%s'" % subtype)
+		self.log.debug("[NewsHandler]: maintype='%s'" % maintype +
+			       " subtype='%s'" % subtype)
 
-            # text parts are our news
-            if maintype == "text":
-                if subtype == "plain":
-		    id_news, res = self.handle_text_part(id_img, body)
-		    result       = result + res
-                else:
-                    # We do not consider other text parts
-                    pass
+		# text parts are our news
+		if maintype == "text":
+		    if subtype == "plain":
+			id_news, res = self.handle_text_part(id_img, body)
+			result       = result + res
+		    else:
+			# We do not consider other text parts
+			pass
 
-            # other type parts, we care about 'image' ones
-            elif maintype == "image":
-                # We insert an image in the data base
-                self.log.debug("[NewsHandler]: image part")
+		# other type parts, we care about 'image' ones
+		elif maintype == "image":
+		    # We insert an image in the data base
+		    self.log.debug("[NewsHandler]: image part")
                     
-                file    = self.attach_path + body.get_filename()
-                TNfile  = self.attach_path + "TN_" + body.get_filename()
+		    file    = self.attach_path + body.get_filename()
+		    TNfile  = self.attach_path + "TN_" + body.get_filename()
                 
-                # We first save the image
-                f = open(file, "w")
-                f.write(body.get_payload(decode=1))
-                f.close()
+		    # We first save the image
+		    f = open(file, "w")
+		    f.write(body.get_payload(decode=1))
+		    f.close()
                 
-                self.log.debug("[NewsHandler]: image saved to '%s'" \
+		    self.log.debug("[NewsHandler]: image saved to '%s'" \
                                % self.attach_path)
 
-                # Then a thumbnail
-                img    = Image.open(file)
-                img.thumbnail((int(self.tnx), int(self.tny)))
-                img.save(TNfile, img.format)         
-                f    = open(TNfile, "r")
-                TNdata  = f.read()   
-                f.close()
+		    # Then a thumbnail
+		    img    = Image.open(file)
+		    img.thumbnail((int(self.tnx), int(self.tny)))
+		    img.save(TNfile, img.format)         
+		    f    = open(TNfile, "r")
+		    TNdata  = f.read()   
+		    f.close()
                     
-                self.log.debug("[NewsHandler]: thumbnail created to '%s'" \
+		    self.log.debug("[NewsHandler]: thumbnail created to '%s'" \
                                % self.attach_path)
                     
-                filesize = os.stat(file).st_size
+		    filesize = os.stat(file).st_size
 
-                # Now we add the images in the data base
-                id_img   = self.add_img(body.get_filename(),
+		    # Now we add the images in the data base
+		    id_img   = self.add_img(body.get_filename(),
                                         body.get_content_type(),
                                         body.get_payload(decode=1),
                                         TNdata, filesize)
                     
-                self.log.debug("[NewsHandler]: image #%d " % id_img + \
+		    self.log.debug("[NewsHandler]: image #%d " % id_img + \
                                "added to DB '%s'" % self.db)
 
-                # And we clean the temporary created files
-                os.remove(file)
-                os.remove(TNfile)
+		    # And we clean the temporary created files
+		    os.remove(file)
+		    os.remove(TNfile)
                     
-                self.log.debug("[NewsHandler]: '%s' and '%s' " \
+		    self.log.debug("[NewsHandler]: '%s' and '%s' " \
                                % (file, TNfile) + "removed")
                     
-                result = result + "Image #%d added" % id_img
+		    result = result + "Image #%d added" % id_img
                 
-            else:
-                # We do not consider other maintypes
-                pass
+		else:
+		    # We do not consider other maintypes
+		    pass
 
         return [('text/plain', result)]
