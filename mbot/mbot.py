@@ -50,6 +50,8 @@ if __name__ == "__main__":
         for part in mesg.walk():
 	    if part.get_content_type() == "text/plain":
                 body.append(part.get_payload(decode=1))
+	    else:
+		body.append(part)
     else:
         body = [mesg.get_payload()]
 
