@@ -130,30 +130,35 @@ def main():
 	resp['In-Reply-To'] =  mesg_id
 
 	# we initialize a handler corresponding to the given subject
-	# first we create a new dict reverse from module one
-	rev_modules = {}
+	# first we create a dict hs which associate handler with subject
+	# hs = {subject: [section, handler], ...}
+	hs = {}
 	for section in SECTIONS:
 		log.debug("section: %s" % section)
 		subjects = section.split(',')
 		handler  = Conf.get(section, 'handler')
 		log.debug("subjects: %s for handler: %s" % (subjects, handler)
 		for subject in subjects:
-			rev_modules[subject] = handler
+			hs[subject] = [section, handler]
 			log.debug("subject: %s" % subject)
-	log.debug("Modules by subject: %s" % rev_modules)
+	log.debug("Modules by subject: %s" % hs)
 
 	# now we can try to import appropriate module and use it
 	h = None
-	for s in rev_modules:
+	for s in hs:
 		if subject.find(s) == 0:
-			handler = rev_modules[s]
+			section = hs[s][0]
+			handler = hs[s][1]
 			log.debug("using handler: %s" % handler)
 			try:
 				handlerModule = __import__(handler)
 				log.notice("Using handler: %s" % handler)
+
 				handlerClass = getattr(handlerModule, handler)
 				log.debug("handlerClass: %s" % handlerClass)
-				h = handlerClass(log, subject[len(s):],
+
+				h = handlerClass(section, log,
+						 subject[len(s):],
 						 dest, sender, date)
 				log.debug("Instanciate handler %s for '%s'" \
 					  % (handler, subject[len(s):]))
@@ -168,6 +173,13 @@ def main():
 	if h is None:
 		log.err("No handler found for '%s'" % subject)
 		mesg = "Sorry, mbot is not configured to handle your request"
+		resp.attach(MIMEText(mesg))
+
+	# Check if user is authorized to use mbot handler
+	elif not h.check_lists(Conf):
+		log.err("%s is not allowed to use mbot handler '%s'" \
+			% (sender, handler))
+		mesg = "Sorry, mbot is not allowed to handle your request"
 		resp.attach(MIMEText(mesg))
 
 	# Here we apply the found handler

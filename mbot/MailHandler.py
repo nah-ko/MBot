@@ -14,12 +14,14 @@ SECTION = ""
 
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
-    def __init__(self, log, params, dest="sended for", sender="sended by", date="sended the"):
-        self.log    = log
-        self.params = params
-        self.date   = date
-        self.sender = sender
-        self.dest   = dest
+    def __init__(self, section, log, params,
+                 dest="sended for", sender="sended by", date="sended the"):
+        self.section = section
+        self.log     = log
+        self.params  = params
+        self.date    = date
+        self.sender  = sender
+        self.dest    = dest
 
     def read_conf(self, config):
         ''' Config parser '''
@@ -28,3 +30,20 @@ class MailHandler:
     def handle(self, body):
         return [('text/plain', body)]
 
+    def check_lists(self, config):
+        """ Check if the user is authorized to use the handler """
+
+        # First check black list
+        if config.has_option(self.section, "BLACK_LIST"):
+            BL = config.get(self.section, "BLACK_LIST")
+            if self.sender in BL:
+                return False
+
+        # Black list is not bloquing, check white list
+        if config.has_option(self.section, "WHITE_LIST"):
+            WL = config.get(self.section, "WHITE_LIST")
+            return self.sender in WL
+        
+        else:
+            # If no white list is provided, mbot usage is accepted
+            return True
