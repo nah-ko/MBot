@@ -132,7 +132,7 @@
   <refsect1>
     <title>See Also</title>
     <para>
-      <command>mbof.conf</command>(5)
+      <command>mbot.conf</command>(5)
     </para>
   </refsect1>
 
