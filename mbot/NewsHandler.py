@@ -45,7 +45,7 @@ class NewsHandler(MailHandler.MailHandler):
 			TNimg_LO.write(filedata)
 			TNimg_LO.close()
 			db.query("commit")
-		id      = getid(db, self.PHOTO_TBLSQ)
+		id      = self.getid(db, self.PHOTO_TBLSQ)
 		myquery	= "update %s set id_img='%d' where id='%d'" % (self.NEWS_TBL, id, news_id)
 		if self.DB_TYPE == 'mysql':
 			mycur	= db.cursor()
@@ -97,7 +97,7 @@ class NewsHandler(MailHandler.MailHandler):
 			mycur.execute(myquery)
 		elif self.DB_TYPE == 'postgresql':
 			req     = db.query(myquery)
-		self.id	= getid(db, self.NEWS_TBLSQ)
+		self.id	= self.getid(db, self.NEWS_TBLSQ)
 		db.close()
 		return self.id
 
