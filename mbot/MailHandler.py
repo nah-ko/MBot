@@ -7,6 +7,8 @@
 # This code is licensed under the GPL.
 # Get yourself a version here : http://www.gnu.org/copyleft/gpl.html
 
+# $Id$
+
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
     def handle(self, body):

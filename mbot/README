@@ -1,0 +1,22 @@
+mbot is intended to be a generic purpose mail robot, written in python.
+
+At first, we want it to provide simple internet access via mail, for
+people having only mail and wanting to get updated online docs !
+
+So the firsts mail handlers written are google and wget !
+
+General design :
+
+ . The bot is installed by adding a | alias on your MTA
+
+ . You then send mail to say mbot@domain.tld, with the command you want
+ the bot to handle as the subject, and its arguments in the body, for
+ the moment one per line.
+
+ . mbot then send you back a mail with multi part data containing the
+ result of your queries.
+
+
+We may later on provide a kind of command line interface, or even an
+internet proxy, in order to make the mail transport as transparent as
+possible.

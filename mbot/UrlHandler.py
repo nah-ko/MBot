@@ -7,6 +7,8 @@
 # This code is licensed under the GPL.
 # Get yourself a version here : http://www.gnu.org/copyleft/gpl.html
 
+# $Id$
+
 import MailHandler
 import string, urllib, mimetools, urlparse
 

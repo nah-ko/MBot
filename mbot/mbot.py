@@ -13,6 +13,8 @@
 # If you use exim, be sure to add the option 'pipe_as_creator' to your
 # configuration, in the 'address_pipe' section
 
+# $Id$
+
 import sys, os, email, smtplib
 
 # All this will be used to create the response mail
