@@ -11,21 +11,30 @@
 
 import MailHandler
 import string, urllib, httplib, mimetools
+import ConfigParser
 
-GOOGLE   = "www.google.fr"
-BASE_URL = "/search?q="
+SECTION = "GOOGLE"
 
 class GoogleHandler(MailHandler.MailHandler):
     "Handle getting url given in mail"
     
+    def read_conf(self, ConfObj):
+        ''' Getting config options for this handler '''
+
+	for option in ConfObj.options(SECTION):
+	     if option == 'host':
+		self.HOST = ConfObj.get(SECTION,option)
+	     elif option == 'base_url':
+		self.BASE_URL = ConfObj.get(SECTION,option)
+
     def handle(self, body):
         """ The body may contain one url per line """
         result = []
 
         for line in body.split('\n'):
             if line != '' and line is not None:
-                url = BASE_URL + urllib.quote(line)
-                conn = httplib.HTTPConnection(GOOGLE)
+                url = self.BASE_URL + urllib.quote(line)
+                conn = httplib.HTTPConnection(self.HOST)
                 conn.request("GET", url)
                 r = conn.getresponse()
 

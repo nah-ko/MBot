@@ -3,6 +3,7 @@
 # mbot - a mail handling robot
 #
 # Author:  Dimitri Fontaine <dim@tapoueh.org>
+# Author:  Christophe Truffier <toffe@nah-ko.org>
 #
 # This code is licensed under the GPL.
 # Get yourself a version here : http://www.gnu.org/copyleft/gpl.html
@@ -12,20 +13,14 @@
 import MailHandler
 import sys, os, email
 import MySQLdb, re, Image
+import ConfigParser
 
-HOST	= "localhost"
-DB 	= "db"
-DB_USER = "user"
-DB_PASS = "pass"
-
-ATTACH_PATH = "/tmp/"
-tnX	= 120
-tnY	= 90
+SECTION	= 'NEWS'
 
 class NewsHandler(MailHandler.MailHandler):
 
 	def add_img(self, filename, filetype, filedata, TNfiledata, filesize):
-		db = MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
+		db = MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
 		news_id	= self.id
 		TABLE	= "photo_test"
 		desc	= "[News] " + filename
@@ -51,7 +46,7 @@ class NewsHandler(MailHandler.MailHandler):
 		return dom
 
 	def add_news(self, text, img_id=0):
-		db 	= MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
+		db 	= MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
 		date 	= self.date
 		sender 	= self.sender
 		subject	= re.escape(self.params)
@@ -67,6 +62,17 @@ class NewsHandler(MailHandler.MailHandler):
 		self.id	= db.insert_id()
 		db.close()
 		return self.id
+
+	def read_conf(self, ConfObj):
+		''' Getting config options for this handler '''
+
+		self.HOST = ConfObj.get(SECTION,'host')
+		self.DB = ConfObj.get(SECTION,'db')
+		self.DB_USER = ConfObj.get(SECTION,'db_user')
+		self.DB_PASS = ConfObj.get(SECTION,'db_pass')
+		self.ATTACH_PATH = ConfObj.get(SECTION,'attach_path')
+		self.tnX = ConfObj.get(SECTION,'tnx')
+		self.tnY = ConfObj.get(SECTION,'tny')
 
 	def handle(self, body):
 		"Get news from text and attachment if present"
@@ -85,14 +91,14 @@ class NewsHandler(MailHandler.MailHandler):
 			else:
 				maintype, subtype = body.get_content_type().split('/',1)
 				if maintype == "image":
-					file	= ATTACH_PATH + body.get_filename()
-					TNfile	= ATTACH_PATH + "TN_" + body.get_filename()
+					file	= self.ATTACH_PATH + body.get_filename()
+					TNfile	= self.ATTACH_PATH + "TN_" + body.get_filename()
 					f	= open(file, "w")
 					f.write(body.get_payload(decode=1))
 					f.close()
 					img	= Image.open(file)
 					format	= img.format
-				        img.thumbnail((tnX,tnY))
+				        img.thumbnail((self.tnX,self.tnY))
 				        img.save(TNfile,format)         
 				        f	= open(TNfile, "r")
 				        TNdata  = f.read()   

@@ -3,6 +3,7 @@
 # mbot - a mail handling robot
 #
 # Author:  Dimitri Fontaine <dim@tapoueh.org>
+# Author:  Christophe Truffier <toffe@nah-ko.org>
 #
 # This code is licensed under the GPL.
 # Get yourself a version here : http://www.gnu.org/copyleft/gpl.html
@@ -16,6 +17,7 @@
 # $Id$
 
 import sys, os, email, smtplib, mimify
+import ConfigParser, time, socket
 
 # All this will be used to create the response mail
 from email import Encoders
@@ -27,9 +29,47 @@ from mimify import mime_decode_header
 
 import MailHandler, UrlHandler, GoogleHandler, PipeHandler, NewsHandler
 
+# default values
 DEBUG        = False
 LOGFILE      = "/tmp/mbot.log"
 MBOT_ADDRESS = "mbot@localhost"
+
+def dolog(message):
+	'''Turning log formating into standard way
+	'''
+
+	# Get pid
+	pid = int(os.getpid())
+
+	# Log format: [Short day] [Numeric day] [Time] [Hostname] [Service[Pid]] : [Message]
+	Time = time.strftime("%b %d %H:%M:%S", time.localtime())
+	Hostname = socket.gethostname()
+	Service = os.path.basename(sys.argv[0])
+	Pid = pid
+	Message = message
+
+	# Log
+	logline = "%s %s %s[%d] : %s" % (Time, Hostname, Service, Pid, Message)
+
+	return logline
+
+def read_defaults():
+	''' Reading configuration file '''
+
+	global DEBUG, LOGFILE, MBOT_ADDRESS
+
+	config = ConfigParser.ConfigParser()
+	configfile = "/PATH/TO/mbot.conf"
+	config.read(configfile)
+	for option in config.defaults():
+		if option == 'debug':
+			DEBUG = config.get('DEFAULT',option)
+		elif option == 'mbot_address':
+			MBOT_ADDRESS = config.get('DEFAULT',option)
+		elif option == 'logfile':
+			LOGFILE = config.get('DEFAULT',option)
+
+	return config
 
 def read_email():
     str = sys.stdin.read()
@@ -38,6 +78,7 @@ def read_email():
     return mesg
 
 if __name__ == "__main__":
+    Conf = read_defaults()
     logfile = open(LOGFILE, 'a')
 
     mesg = read_email()
@@ -58,7 +99,7 @@ if __name__ == "__main__":
     else:
         body = [mesg.get_payload()]
 
-    logfile.write("message: %s %s %s \n" % (mesg_id, sender, subject))
+    logfile.write(dolog("message: %s %s %s \n" % (mesg_id, sender, subject)))
 
     resp = MIMEMultipart()
     resp['Subject']     =  'Re: %s' % subject
@@ -79,6 +120,9 @@ if __name__ == "__main__":
         
     else:
         h = MailHandler.MailHandler(subject)
+
+    # Reading handler config
+    h.read_conf(Conf)
 
     if DEBUG:
         for part in body:
@@ -106,6 +150,7 @@ if __name__ == "__main__":
             resp.attach(data)
 
     # Then we send the mail
+    logfile.write(dolog("Sending from %s to  %s \n" % (MBOT_ADRESS, sender)))
     s = smtplib.SMTP()
     s.connect()
     s.sendmail(MBOT_ADDRESS, sender, resp.as_string())
