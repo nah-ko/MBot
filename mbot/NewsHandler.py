@@ -86,4 +86,4 @@ class NewsHandler(MailHandler.MailHandler):
 					id_news = self.add_news(part)
 		result	= "Automatic response:\n"
 		result	= result + "News #%d added with image #%d (0 for none)" % (id_news, id_img)
-		return result
+		return [('text/plain', result)]
