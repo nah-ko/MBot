@@ -24,7 +24,7 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEImage import MIMEImage
 from email.MIMEText import MIMEText
 
-import MailHandler, UrlHandler, GoogleHandler
+import MailHandler, UrlHandler, GoogleHandler, PipeHandler
 
 DEBUG        = False
 LOGFILE      = "/tmp/mbot.log"
@@ -44,7 +44,13 @@ if __name__ == "__main__":
     sender  = mesg.get('From')
     subject = mesg.get('Subject')
     mesg_id = mesg.get('Message-Id')
-    body    = mesg.get_payload()
+
+    if mesg.is_multipart():
+        body = []
+        for part in mesg.walk():
+            body.append(part)
+    else:
+        body = [mesg.get_payload()]
 
     logfile.write("message: %s %s %s \n" % (mesg_id, sender, subject))
 
@@ -53,35 +59,42 @@ if __name__ == "__main__":
     resp['To']          = sender
     resp['In-Reply-To'] =  mesg_id
 
-    if subject == 'wget':
-        h = UrlHandler.UrlHandler()
-    elif subject == 'google':
-        h = GoogleHandler.GoogleHandler()
+    if subject.find('wget') == 0:
+        h = UrlHandler.UrlHandler(subject[4:])
+        
+    elif subject.find('google') == 0:
+        h = GoogleHandler.GoogleHandler(subject[6:])
+        
+    elif subject.find('|') == 0:
+        h = PipeHandler.PipeHandler(subject[1:])
+        
     else:
-        h = MailHandler.MailHandler()
+        h = MailHandler.MailHandler(subject)
 
     if DEBUG:
-        [(type, part)] = h.handle(body)
-        print part
+        for part in body:
+            [(type, out)] = h.handle(part)
+            print out
         sys.exit(0)
 
-    for (type, part) in h.handle(body):
-        maintype, subtype = type.split('/', 1)
-        if maintype == 'text':
-            data = MIMEText(part, _subtype=subtype)
+    for part in body:
+        for (type, out) in h.handle(part):
+            maintype, subtype = type.split('/', 1)
+            if maintype == 'text':
+                data = MIMEText(out, _subtype=subtype)
 
-        elif maintype == 'image':
-            data = MIMEImage(part, _subtype=subtype)
+            elif maintype == 'image':
+                data = MIMEImage(out, _subtype=subtype)
 
-        elif maintype == 'audio':
-            data = MIMEAudio(part, _subtype=subtype)
+            elif maintype == 'audio':
+                data = MIMEAudio(out, _subtype=subtype)
 
-        else:
-            data = MIMEBase(maintype, subtype)
-            data.set_payload(part)
-            Encoders.encode_base64(msg)
+            else:
+                data = MIMEBase(maintype, subtype)
+                data.set_payload(out)
+                Encoders.encode_base64(msg)
 
-        resp.attach(data)
+            resp.attach(data)
 
     # Then we send the mail
     s = smtplib.SMTP()

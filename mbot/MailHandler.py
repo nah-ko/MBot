@@ -11,6 +11,9 @@
 
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
+    def __init__(self, params):
+        self.params = params
+    
     def handle(self, body):
         return [('text/plain', body)]
 
