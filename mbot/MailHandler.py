@@ -17,13 +17,13 @@ class MailHandler:
     def __init__(self, log, params, dest="sended for", sender="sended by", date="sended the"):
         self.log    = log
         self.params = params
-	self.date   = date
-	self.sender = sender
-	self.dest   = dest
+        self.date   = date
+        self.sender = sender
+        self.dest   = dest
 
     def read_conf(self, config):
-	''' Config parser '''
-    	pass
+        ''' Config parser '''
+        pass
     
     def handle(self, body):
         return [('text/plain', body)]
