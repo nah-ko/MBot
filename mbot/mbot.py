@@ -170,7 +170,7 @@ def main():
 			else:
 				data = MIMEBase(maintype, subtype)
 				data.set_payload(out)
-				Encoders.encode_base64(mesg)
+				Encoders.encode_base64(data)
 
 			# When in debug mode, we do not send back mail
 			if not DEBUG:
