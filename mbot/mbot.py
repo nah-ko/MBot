@@ -24,7 +24,7 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEImage import MIMEImage
 from email.MIMEText import MIMEText
 
-import MailHandler, UrlHandler, GoogleHandler, PipeHandler
+import MailHandler, UrlHandler, GoogleHandler, PipeHandler, NewsHandler
 
 DEBUG        = False
 LOGFILE      = "/tmp/mbot.log"
