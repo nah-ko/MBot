@@ -70,6 +70,32 @@ def read_email():
 
 	return mesg
 
+def attach(mesg, response):
+	""" attach a handler response to our return mail"""
+	(type, out) = response
+	maintype, subtype = type.split('/', 1)
+	log.debug("%s part type" % maintype)
+	
+	if maintype == 'text':
+		data = MIMEText(out, _subtype=subtype)
+		log.debug("Result is:\n%s" % out)
+		
+	elif maintype == 'image':
+		data = MIMEImage(out, _subtype=subtype)
+		
+	elif maintype == 'audio':
+		data = MIMEAudio(out, _subtype=subtype)
+		
+	else:
+		# Generic mime encoding
+		data = MIMEBase(maintype, subtype)
+		data.set_payload(out)
+		Encoders.encode_base64(data)
+		
+	mesg.attach(data)
+
+	
+
 def main():
 	""" Here we do the job """
 	global RELEASE, MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL
@@ -111,23 +137,13 @@ def main():
 	sender  = mesg.get('From')
 	subject = mime_decode_header(mesg.get('Subject'))
 	mesg_id = mesg.get('Message-Id')
-	date    = time.strftime('%Y-%m-%d %H:%M:%S', rfc822.parsedate(mesg.get('Date')))
+	date    = time.strftime('%Y-%m-%d %H:%M:%S',
+				rfc822.parsedate(mesg.get('Date')))
 	dest    = mesg.get('To')
 	
 	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' " \
 		   % (date, sender, mesg_id, dest) + \
 		   "with subject '%s'" % subject)
-
-	# we only consider (parse) the text/plain parts of message
-	if mesg.is_multipart():
-		body = []
-		for part in mesg.walk():
-			if part.get_content_type() == "text/plain":
-				body.append(part.get_payload(decode=1))
-			else:
-				body.append(part)
-	else:
-		body = [mesg.get_payload()]
 
 	log.notice("message: %s %s %s \n" % (mesg_id, sender, subject))
 
@@ -170,7 +186,9 @@ def main():
 
 				h = handlerClass(section, log,
 						 subject[len(s):],
-						 dest, sender, date)
+						 dest, sender, date,
+						 mesg.is_multipart())
+				
 				log.debug("Instanciate handler %s for '%s'" \
 					  % (handler, subject[len(s):]))
 			except:
@@ -198,29 +216,17 @@ def main():
 		# then we read the handler config
 		h.read_conf(Conf)
 
-		# we pass each part of the message to the handler
-		for part in body:
-			for (type, out) in h.handle(part):
-				maintype, subtype = type.split('/', 1)
-				log.debug("%s part type" % maintype)
+		if mesg.is_multipart():
+			# Give each part of message to handler
+			for part in mesg.walk():
+				# Consider all responses we may have
+				for response in h.handle(part):
+					attach(resp, response)
 				
-				if maintype == 'text':
-					data = MIMEText(out, _subtype=subtype)
-					log.debug("Result is:\n%s" % out)
-
-				elif maintype == 'image':
-					data = MIMEImage(out, _subtype=subtype)
-
-				elif maintype == 'audio':
-					data = MIMEAudio(out, _subtype=subtype)
-
-				else:
-					# Generic mime encoding
-					data = MIMEBase(maintype, subtype)
-					data.set_payload(out)
-					Encoders.encode_base64(data)
-
-				resp.attach(data)
+		else:
+			# Call handle just once with message payload
+			for response in h.handle(mesg):
+				attach(resp, response)
 
 	# Then we send the mail
 	log.notice("Sending from %s to  %s \n" % (MBOT_ADDRESS, sender))
