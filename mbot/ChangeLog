@@ -1,5 +1,15 @@
 $Id$
 
+2003-12-29   Christophe Truffier toffe@nah-ko.org
+          * Each Handler: Now read_conf get options via MailHander and check
+	  existance of each of them.
+
+	  * mbot.conf: White and Black list creation capable for handler
+	  restrictions. For example white list could be used for NewsHandler
+	  to have sender limitations.
+
+	  * Makefile: Release 0.3
+
 2003-12-12   Christophe Truffier toffe@nah-ko.org
 
           * All files: added some syslog entries
