@@ -41,16 +41,30 @@ class MailHandler:
     def check_lists(self, config):
         """ Check if the user is authorized to use the handler """
 
+	# Use email part of sender
+	self.log.debug("[check_lists]: sender = %s" % self.sender)
+	if self.sender.find('<'):
+	    deb = self.sender.find('<') + 1
+	    fin = self.sender.find('>')
+	    sender = self.sender[deb:fin]
+	else:
+	    sender = self.sender
+	self.log.debug("[check_lists]: sender(email) = %s" % sender)
+
         # First check black list
         if config.has_option(self.section, "BLACK_LIST"):
+	    self.log.debug("[check_lists]: BLACK_LIST exists")
             BL = config.get(self.section, "BLACK_LIST")
-            if self.sender in BL:
+	    self.log.debug("[check_lists]: BLACK_LIST=%s" % BL)
+            if sender in BL:
                 return False
 
         # Black list is not bloquing, check white list
         if config.has_option(self.section, "WHITE_LIST"):
+	    self.log.debug("[check_lists]: WHITE_LIST exists")
             WL = config.get(self.section, "WHITE_LIST")
-            return self.sender in WL
+	    self.log.debug("[check_lists]: WHITE_LIST=%s" % WL)
+            return sender in WL
         
         else:
             # If no white list is provided, mbot usage is accepted
