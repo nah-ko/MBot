@@ -51,6 +51,10 @@ Per handler configuration
 
       lang = fr
 
+ . Split actual configuration file into one per handler, as example. So
+   admin who use mbot will have to read each of these examples to make
+   it's own configuration file.
+
 
 Handlers
 -=-=-=-=-
@@ -59,9 +63,11 @@ Handlers
       mbot/
         handlers/
           web/
+	    web_example.conf
             UrlHandler.py
             GoogleHandler.py
           news/
+	    news_example.conf
             NewsHandler.py
             PgNewsHandler.py
             MyNewsHandler.py
