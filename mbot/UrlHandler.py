@@ -28,38 +28,42 @@ class UrlHandler(MailHandler.MailHandler):
         """ The body may contain one url per line """
         result    = []
 	glob_size = 0
-	size      = 0
 
 	self.log.notice("[UrlHandler]")
         for line in body.split():
 	    if glob_size < self.MAILSIZE:
-		    if line != '' and line is not None:
-			(p, server, path, params, q, f) = urlparse.urlparse(line)
-			url   = urlparse.urlunparse((p, server,
-						     urllib.quote(path),
-						     urllib.quote(params),
-						     urllib.quote(q, '/='),
-						     urllib.quote(f)))
-			self.log.debug("[UrlHandler]: url='%s'" % url)
-			size = int(urllib.urlopen(url).info().getheader("Content-Length"))
-			self.log.debug("[UrlHandler]: size='%d'" % size)
-			if size < self.ATTSIZE:
-				data  = urllib.urlopen(url)
-				result.append((data.info().gettype(), data.read()))
-				glob_size += size
-				self.log.debug("[UrlHandler]: glob_size='%d'" % glob_size)
-				self.log.notice("[UrlHandler]: Retreiving url '%s'" \
-						 % url)
-			else:
-				type = "text/plain"
-				data = "Attachment size exceed %s" % self.ATTSIZE
-				self.log.notice("[UrlHandler]: %s" % data)
-				result.append((type, data))
-	    else:
-	            type = "text/plain"
-		    data = "Mail size exceed %s" % self.MAILSIZE
-		    self.log.notice("[UrlHandler]: %s" % data)
-		    result.append((type, data))
+                if line != '' and line is not None:
+                    (p, server, path, params, q, f) = urlparse.urlparse(line)
+                    url   = urlparse.urlunparse((p, server,
+                                                 urllib.quote(path),
+                                                 urllib.quote(params),
+                                                 urllib.quote(q, '/='),
+                                                 urllib.quote(f)))
+                    self.log.debug("[UrlHandler]: url='%s'" % url)
+
+                    # Now we get the source and read infos
+                    src  = urllib.urlopen(url)
+                    size = int(src.info().getheader("Content-Length"))
+                    self.log.debug("[UrlHandler]: size='%d'" % size)
+                        
+                    if size < self.ATTSIZE:
+                        result.append((src.info().gettype(), src.read()))
+                        glob_size += size
+                                
+                        self.log.debug(
+                            "[UrlHandler]: glob_size='%d'" % glob_size)
+                        self.log.notice(
+                            "[UrlHandler]: Retreiving url '%s'" % url)
+                    else:
+                        type = "text/plain"
+                        data = "Attachment size exceed %s" % self.ATTSIZE
+                        self.log.notice("[UrlHandler]: %s" % data)
+                        result.append((type, data))
+            else:
+                type = "text/plain"
+                data = "Mail size exceed %s" % self.MAILSIZE
+                self.log.notice("[UrlHandler]: %s" % data)
+                result.append((type, data))
 
         return result
             
