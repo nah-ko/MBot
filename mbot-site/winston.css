@@ -1,0 +1,172 @@
+BODY {	
+	color: black;
+	font-family: Verdana,sans-serif;
+	font-size: 10pt;
+	background: #DCE8F2 url("../icons/winston-bg.jpg") repeat;
+	//background-image: url("lib/icons/winston-bg.jpg");
+	//background-repeat: repeat;
+}
+
+TABLE.menu {
+	background: #DCE8F2;
+}
+
+A {	
+	color: #7B7B7B;
+	text-decoration: none;
+	font-size: 10pt;
+}
+
+A:hover {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-decoration: underline;
+	font-size: 10pt;
+}
+
+A:visited {
+	color: purple;
+	text-decoration: none;
+	font-size: 10pt;
+}
+
+A.menu {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-decoration: none;
+	font-size: 12pt;
+	font-style: normal;
+}
+
+A.menu:hover {
+	color: #DCE8F2;
+	font-size: 12pt;
+	text-decoration: underline;
+}
+
+A.foot {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-decoration: none;
+	font-size: 12pt;
+	font-style: normal;
+}
+
+A.foot:hover {
+	color: #DCE8F2;
+	font-size: 12pt;
+	text-decoration: underline;
+}
+
+H1 {
+	color: #7B7B7B;
+	background: #DCE8F2;
+	//text-decoration: underline;
+        //font-style: italic;
+}
+
+P {
+	text-align: justify;
+	//text-indent: 0.5cm;
+}
+
+P.ctre {
+	text-align: center;
+	text-indent: 0.5cm;
+}
+
+P.titre {
+	font-weight: bold;
+	text-align: left;
+	text-indent: 0.5cm;
+}
+
+P.nota {
+	font-style: italic;
+	text-align: right;
+	text-indent: 0.5cm;
+}
+
+P.grostitre {
+	font-weight: bold;
+	font-size: 14pt;
+	text-decoration: none;
+	text-align: center;
+	color: #DCE8F2;
+}
+
+TH {	
+	color: #DCE8F2;
+	text-decoration: none;
+	text-align: left;
+}
+
+TH.big {	
+	color: #DCE8F2;
+	text-decoration: none;
+	text-align: left;
+	font-size: 10pt;
+	padding: 4px;
+}
+
+TR.big {
+	color: #DCE8F2;
+	background: #9B9B9B;
+}
+
+TR.titre {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-decoration: none;
+	font-size: 12pt
+}
+
+TR.menu {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-decoration: none;
+	font-size: 12pt;
+}
+
+TH.menu {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-align: center;
+	text-decoration: none;
+	font-size: 12pt;
+	font-style: italic;
+	padding: 4px;
+}
+
+TD.menuclair {
+	color: #9B9B9B;
+	background: #DCE8F2;
+	text-align: center;
+	text-decoration: none;
+	font-size: 12pt;
+}
+
+TD.menu {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-align: center;
+	text-decoration: none;
+	font-size: 12pt
+}
+
+TR.menu {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	text-decoration: none;
+	font-size: 12pt;
+}
+
+TD.foot {
+	color: #DCE8F2;
+	background: #9B9B9B;
+	padding: 0;
+}
+
+FORM {
+	margin-bottom: 0;
+}

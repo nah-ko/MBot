@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+    <TITLE>Mbot - Access Internet by mail</TITLE>
+    <LINK REL="Stylesheet" TITLE="Default Stylesheet" HREF="winston.css">
+</HEAD>
+<BODY>
+<table border="0" align="center" width="70%" cellpadding="20">
+<tr background="winston-bg.jpg"><td>
+
+<H1 align="center">The Mbot</H1>
+
+<P>
+<b>mbot</b> is intended to be a generic purpose mail robot, and it is
+written in python.
+
+At first, we want it to provide simple internet access via mail, for
+people having only mail and wanting to get updated online docs&nbsp;!
+
+<P>
+General design&nbsp;:
+<ul>
+	<li>The bot is installed by adding a <tt>| alias</tt> on your MTA</li>
+
+	<li> You then send mail to say <tt>mbot@domain.tld</tt>,
+	with the command you want the bot to handle as the subject,
+	and its arguments in the body, for the moment one per line.</li>
+
+	<li>mbot then send you back a mail with multi-part data containing the
+     result of your queries.</li>
+</ul>
+
+<P>
+As I write this little presentation page, 3 handlers have been
+written&nbsp;:
+<ul>
+	<li><u>wget</u> to get a page given its url. The data mime-type will
+	be respected when received by the response mail, so you can get PDF
+	documents, images or whatever you want...</li>
+	<li><u>google</u> to make a request to the well known search
+	engine.</li>
+	<li><u>news</u> to update a news data-base with text and optionnaly
+	some images too. Then you set up a dynamic web page using those
+	data, and you can manage updating your news section by mail.</li>
+</ul>
+<P>
+We may later on provide a kind of command line interface, or even an
+internet proxy, in order to make the mail transport as transparent as
+possible.
+
+<P class="ctre">
+You can check the sources here in the
+<a href="http://cvs.nah-ko.org/cgi-bin/cvsweb/mbot/mbot/">CVS</a>.<br>The
+latest release is available <a href="releases/">here</a>.
+
+<P>
+Of course, you'd like a release to play with... but we did not manage to
+get the time to package mbot.
+The <a href="http://www.debian.org">debian</a> package should be
+available soon.
+
+<P>
+Of course, mbot is released under the GNU
+<a href="http://www.gnu.org/licenses/gpl.txt">GPL</a> licence...
+Feel free to contribute, to be in the developper team, just send me an
+<a href="mailto: Dimitri Fontaine <dim@tuxfamily.org>">email</a>.
+
+<P>
+Enjoy mbot, enjoy free softwares :)
+
+</td></tr>
+</table>
+
+</BODY>
+</HTML>
