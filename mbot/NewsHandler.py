@@ -33,15 +33,12 @@ class NewsHandler(MailHandler):
     def getsite(self, e_mail):
         """ Get the site information """
         
-        self.log.notice("[NewsHandler]: getsite")
-        befat, aftat = e_mail.split('@')
+	import rfc822
 
-        if len(aftat.split('>')) != 1:
-                dom, B = aftat.split('>')
-        elif len(aftat.split('>')) == 1:
-            A = aftat.split('>')
-            dom = A[0]
-            
+        self.log.notice("[NewsHandler]: getsite")
+	(name, sender) = rfc822.parseaddr(e_mail)
+        self.log.debug("[NewsHandler]: getsite -> sender='%s'" % sender)
+        (user, dom)    = sender.split('@')
         self.log.debug("[NewsHandler]: getsite -> dom='%s'" % dom)
 
         try:
