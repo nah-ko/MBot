@@ -82,16 +82,24 @@ class NewsHandler(MailHandler.MailHandler):
 
 		return id
 	
-	def add_news(self, text, img_id=0):
+	def dbconn(self):
 		if self.DB_TYPE == 'mysql':
 			db = MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
 		elif self.DB_TYPE == 'postgresql':
 			db = pg.connect(dbname=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
+
+		return db
+		
+	def add_news(self, text, img_id=0):
+		db      = self.dbconn()
 		date 	= self.date
 		sender 	= self.sender
 		subject	= re.escape(self.params)
 		SITE 	= self.getsite(self.dest)
-		myquery = "insert into %s (site,date,de,sujet,message,id_img) values('%s','%s','%s','%s','%s','%d')" % (self.NEWS_TBL, SITE, date, sender, subject, re.escape(text), img_id)
+		if img_id == 0:
+			myquery = "insert into %s (site,date,de,sujet,message) values('%s','%s','%s','%s','%s')" % (self.NEWS_TBL, SITE, date, sender, subject, re.escape(text))
+		else:
+			myquery = "insert into %s (site,date,de,sujet,message,id_img) values('%s','%s','%s','%s','%s','%d')" % (self.NEWS_TBL, SITE, date, sender, subject, re.escape(text), img_id)
 		if self.DB_TYPE == 'mysql':
 			mycur	= db.cursor()
 			mycur.execute(myquery)
