@@ -32,6 +32,8 @@ class MailHandler:
 	    self.log.debug("[MailHandler]: p = %s" % p)
             if config.has_option(self.section, p):
                 setattr(self, p, config.get(self.section, p))
+		self.log.debug("[MailHandler]: read_conf, option %s = %s" % ( p,
+		    config.get(self.section, p)))
             else:
                 setattr(self, p, None)
     

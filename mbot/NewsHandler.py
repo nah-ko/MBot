@@ -90,12 +90,12 @@ class NewsHandler(MailHandler):
         else:
             id_news = self.add_news(text)
 
-        result = result + " #%d added" % id_news
+        result = " #%d added" % id_news
         
         self.log.debug("[NewsHandler]: result='%s' for '%s'" \
                        % (result, self.section))
                 
-        return id_news
+        return id_news, result
 
 
     # Handle is called on each part of multipart mail, or on body of
@@ -112,7 +112,8 @@ class NewsHandler(MailHandler):
 
         # Handle simple text messages
         if not self.multipart_mesg:
-            id_news = self.handle_text_part(id_img, body)
+            id_news, res = self.handle_text_part(id_img, body)
+	    result       = result + res
             
         # Handle multipart messages
         else:
@@ -125,7 +126,8 @@ class NewsHandler(MailHandler):
             # text parts are our news
             if maintype == "text":
                 if subtype == "plain":
-                    id_news = self.handle_text_part(id_img, body)
+		    id_news, res = self.handle_text_part(id_img, body)
+		    result       = result + res
                 else:
                     # We do not consider other text parts
                     pass
@@ -148,7 +150,7 @@ class NewsHandler(MailHandler):
 
                 # Then a thumbnail
                 img    = Image.open(file)
-                img.thumbnail((int(self.tnX), int(self.tnY)))
+                img.thumbnail((int(self.tnx), int(self.tny)))
                 img.save(TNfile, img.format)         
                 f    = open(TNfile, "r")
                 TNdata  = f.read()   

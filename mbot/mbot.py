@@ -72,6 +72,8 @@ def read_email():
 
 def attach(mesg, response):
 	""" attach a handler response to our return mail"""
+	global log
+
 	(type, out) = response
 	maintype, subtype = type.split('/', 1)
 	log.debug("%s part type" % maintype)
@@ -98,7 +100,7 @@ def attach(mesg, response):
 
 def main():
 	""" Here we do the job """
-	global RELEASE, MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL
+	global RELEASE, MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL, log
 
 	from optparse import OptionParser
 
