@@ -46,13 +46,10 @@ class MyNewsHandler(NewsHandler.NewsHandler):
         db    = self.dbconn()
         mycur = db.cursor()
         mycur.execute(sql)
-	text  = "\tid\t|\tid_img\t|\tsite\t|\tdate\t|\tde\t|\tsujet\t\n"
-	for (ID, ID_IMG, SITE, DATE, DE, SUJET) in mycur.fetchall():
-	    text = text + "\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\n" % (ID,
-		ID_IMG, SITE, DATE, DE, SUJET)
+	res   = list(mycur.fetchall())
         db.close()
 
-        return text
+        return res 
     
     def getid(self, conn, table=None):
         """ Get the next available news Id """
