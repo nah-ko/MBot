@@ -101,7 +101,10 @@ def main():
 	mesg_id = mesg.get('Message-Id')
 	date    = mesg.get('Date')
 	dest    = mesg.get('To')
-	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' with subject '%s'" % (date, sender, mesg_id, dest, subject))
+	
+	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' " +
+		   "with subject '%s'" \
+		   % (date, sender, mesg_id, dest, subject))
 
 	# we only consider (parse) the text/plain parts of message
 	if mesg.is_multipart():
@@ -130,6 +133,7 @@ def main():
 		for s in MODULES[m]:
 			log.debug("s: %s" % s)
 			rev_modules[s] = m
+
 	# now we can try to import appropriate module and use it
 	h = None
 	for s in rev_modules:
@@ -141,58 +145,58 @@ def main():
 				log.notice("Using handler: %s" % handler)
 				handlerClass = getattr(handlerModule, handler)
 				log.debug("handlerClass: %s" % handlerClass)
-				h = handlerClass(subject[len(s):], dest, sender, date)
-				log.debug("Instanciate handler %s for '%s'" % (handler, subject[len(s):]))
+				h = handlerClass(subject[len(s):],
+						 dest, sender, date)
+				log.debug("Instanciate handler %s for '%s'" \
+					  % (handler, subject[len(s):]))
 			except:
-				log.debug("Impossible to load handler: %s" % handler)
-				log.debug("    %s: %s" %( sys.exc_type, sys.exc_value))
+				log.error("Impossible to load handler: %s" \
+					  % handler)
+				log.error("%s: %s" \
+					  % (sys.exc_type, sys.exc_value))
 			break
 
+	# If we have no handler, we send an error mail
 	if h is None:
-		log.debug("No handler found for '%s'" % subject)
-		resp = "Sorry, mbot is not configured to handle your request"
-		s = smtplib.SMTP()
-		s.connect()
-		s.sendmail(MBOT_ADDRESS, sender, resp)
-		s.close()
-		sys.exit()
+		log.error("No handler found for '%s'" % subject)
+		mesg = "Sorry, mbot is not configured to handle your request"
+		resp.attach(MIMEText(mesg))
 
+	# Here we apply the found handler
+	else:
+		# then we read the handler config
+		h.read_conf(Conf)
 
-	# then we read the handler config
-	h.read_conf(Conf)
-
-	for part in body:
-		for (type, out) in h.handle(part):
-			maintype, subtype = type.split('/', 1)
-			log.debug("%s part type" % maintype)
-			if maintype == 'text':
-				data = MIMEText(out, _subtype=subtype)
-				if LOG_LEVEL == 'debug':
+		# we pass each part of the message to the handler
+		for part in body:
+			for (type, out) in h.handle(part):
+				maintype, subtype = type.split('/', 1)
+				log.debug("%s part type" % maintype)
+				
+				if maintype == 'text':
+					data = MIMEText(out, _subtype=subtype)
 					log.debug("Result is:\n%s" % out)
 
-			elif maintype == 'image':
-				data = MIMEImage(out, _subtype=subtype)
+				elif maintype == 'image':
+					data = MIMEImage(out, _subtype=subtype)
 
-			elif maintype == 'audio':
-				data = MIMEAudio(out, _subtype=subtype)
+				elif maintype == 'audio':
+					data = MIMEAudio(out, _subtype=subtype)
 
-			else:
-				data = MIMEBase(maintype, subtype)
-				data.set_payload(out)
-				Encoders.encode_base64(data)
+				else:
+					# Generic mime encoding
+					data = MIMEBase(maintype, subtype)
+					data.set_payload(out)
+					Encoders.encode_base64(data)
 
-			# When in debug mode, we do not send back mail
-			if not LOG_LEVEL == 'debug':
 				resp.attach(data)
 
 	# Then we send the mail
-	if not LOG_LEVEL == 'debug':
-		log.notice("Sending from %s to  %s \n" % (MBOT_ADDRESS, sender))
-		
-		s = smtplib.SMTP()
-		s.connect()
-		s.sendmail(MBOT_ADDRESS, sender, resp.as_string())
-		s.close()
+	log.notice("Sending from %s to  %s \n" % (MBOT_ADDRESS, sender))
+	s = smtplib.SMTP()
+	s.connect()
+	s.sendmail(MBOT_ADDRESS, sender, resp.as_string())
+	s.close()
 
 if __name__ == "__main__":
 	main()
