@@ -1,9 +1,11 @@
+# $Id$
+
 Handler Pipe
 
 Fonctionnement
 
-Grâce à ce handler il est possible de procédé à l'execution d'une
+Grâce à ce handler il est possible de procéder à l'exécution d'une
 commande particulière; le contenu du mail sera utilisé comme données
 envoyées au pipe.
-Ici la réponse qui est retournée est le résultat de "corps_du_mail |
-commande".
+Ici la réponse qui est retournée est le résultat de 
+    cat corps_du_mail | commande

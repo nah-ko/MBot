@@ -1,9 +1,11 @@
+# $Id$
+
 Handler News
 
 Fonctionnement
 
 Le handler récupère le destinataire, le corps du message, l'expéditeur,
-la date; ceci afin de remplir la base de donnée.
+la date ; ceci afin de remplir la base de données.
 Tous les champs texte susceptibles de contenir des caractères accentués
 sont "échappés" afin de passer correctement lors du passage à la base de
 donnée.
