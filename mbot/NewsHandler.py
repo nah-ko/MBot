@@ -70,7 +70,10 @@ class NewsHandler(MailHandler.MailHandler):
 		return dom
 
 	def add_news(self, text, img_id=0):
-		db 	= MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
+		if self.DB_TYPE == 'mysql':
+			db = MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
+		elif self.DB_TYPE == 'postgresql':
+			db = pg.connect(dbname=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
 		date 	= self.date
 		sender 	= self.sender
 		subject	= re.escape(self.params)
@@ -81,9 +84,14 @@ class NewsHandler(MailHandler.MailHandler):
 		elif dest == "rein-team.darktech.org":
 			SITE	= "reinteam"
 		myquery = "insert into %s (site,date,de,sujet,message,id_img) values('%s','%s','%s','%s','%s','%d')" % (TABLE, SITE, date, sender, subject, re.escape(text), img_id)
-		mycur	= db.cursor()
-		mycur.execute(myquery)
-		self.id	= db.insert_id()
+		if self.DB_TYPE == 'mysql':
+			mycur	= db.cursor()
+			mycur.execute(myquery)
+			self.id	= db.insert_id()
+		elif self.DB_TYPE == 'postgresql':
+			req     = db.query(myquery)
+			SEQ_TABLE = TABLE + '_id_seq'
+			self.id   = db.query("select currval('%s')" % SEQ_TABLE).getresult()[0]
 		db.close()
 		return self.id
 
