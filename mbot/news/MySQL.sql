@@ -1,3 +1,6 @@
+# Test tables for MySQL
+# You will need to create a database before !!
+# $Id$
 
 CREATE TABLE photo_test (
   id int(4) NOT NULL auto_increment,

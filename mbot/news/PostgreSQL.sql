@@ -1,3 +1,7 @@
+# Test tables for PostgreSQL
+# You will need to create a database before !!
+# $Id$
+
 BEGIN;
 
 CREATE SEQUENCE news_test_id_seq;
