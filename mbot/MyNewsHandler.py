@@ -11,7 +11,7 @@
 # $Id$
 
 import NewsHandler
-import sys, os, email, re, Image
+import sys, os, email, re
 import ConfigParser
 
 import MySQLdb
@@ -33,6 +33,7 @@ class MyNewsHandler(NewsHandler.NewsHandler):
         db    = self.dbconn()
         mycur = db.cursor()
         mycur.execute(sql)
+        self.id = self.getid(db, self.NEWS_TBLSQ)
         db.close()
 
         return self.id
@@ -64,10 +65,10 @@ class MyNewsHandler(NewsHandler.NewsHandler):
         db      = self.dbconn()
         mycur	= db.cursor()
         mycur.execute(myquery)
-        self.log.debug("[MyNewsHandler]: add_img")
 
         # Now we add the link to the image from the news table
         id      = self.getid(db, self.PHOTO_TBLSQ)
+        self.log.debug("[MyNewsHandler]: add_img => id='%d'" % id)
         myquery	= "UPDATE %s SET id_img='%d' WHERE id='%d'" \
                   % (self.NEWS_TBL, id, news_id)
         mycur	= db.cursor()

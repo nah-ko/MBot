@@ -11,7 +11,7 @@
 # $Id$
 
 import NewsHandler
-import sys, os, email, re, Image
+import sys, os, email
 import ConfigParser
 
 import pg
@@ -34,6 +34,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         """ Execute the given query """
         db      = self.dbconn()
         req     = db.query(sql)
+        self.id = self.getid(db, self.NEWS_TBLSQ)
         db.close()
 
         return self.id
@@ -47,7 +48,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         # So we get the value with getresult()[0][0]
         id = conn.query("select currval('%s')" % table).getresult()[0][0]
 
-        self.log.debug("[NewsHandler]: getid -> id='%d'" % id)
+        self.log.debug("[PgNewsHandler]: getid -> id='%d'" % id)
         return id
 
     def add_img(self, filename, filetype, filedata, TNfiledata, filesize):
@@ -57,17 +58,8 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         news_id	= self.id
         desc	= "[News] " + filename
         
-        # The SQL query
-        sql = """
-        INSERT INTO %s (description, img_data, tnimg_data,
-                        filename, filesize,filetype)
-        VALUES ('%s','%s','%s','%s','%d','%s')
-        """ % (self.PHOTO_TBL, desc, img_LO.oid, TNimg_LO.oid,
-               filename, filesize, filetype)
-
         db      = self.dbconn()
         db.query("begin")
-        req      = db.query(sql)
 
         # We create Large Object
         img_LO   = db.locreate(INV_WRITE)
@@ -81,12 +73,20 @@ class PgNewsHandler(NewsHandler.NewsHandler):
         TNimg_LO.write(TNfiledata)
         TNimg_LO.close()
         
-        db.query("commit")
+        # The SQL query
+        sql = """
+        INSERT INTO %s (description, img_data, tnimg_data,
+                        filename, filesize,filetype)
+        VALUES ('%s','%s','%s','%s','%d','%s')
+        """ % (self.PHOTO_TBL, desc, img_LO.oid, TNimg_LO.oid,
+               filename, filesize, filetype)
+        req      = db.query(sql)
 
-        self.log.debug("[PgNewsHandler]: add_img")
+        db.query("commit")
 
         # Now we add the link to the image from the news table
         id      = self.getid(db, self.PHOTO_TBLSQ)
+        self.log.debug("[PgNewsHandler]: add_img => id='%d'" % id)
         myquery	= "UPDATE %s SET id_img='%d' WHERE id='%d'" \
                   % (self.NEWS_TBL, id, news_id)
         

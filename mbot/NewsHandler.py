@@ -11,7 +11,7 @@
 # $Id$
 
 import MailHandler
-import sys, os, email
+import sys, os, email, re, Image
 import ConfigParser
 
 SECTION    = 'NEWS'
@@ -46,10 +46,10 @@ class NewsHandler(MailHandler.MailHandler):
         
     def add_news(self, text, img_id=0):
         self.log.notice("[NewsHandler]: add_news")
-        date     = self.date
-        sender     = self.sender
-        subject    = re.escape(self.params)
-        SITE     = self.getsite(self.dest)
+        date    = self.date
+        sender  = self.sender
+        subject = re.escape(self.params)
+        SITE    = self.getsite(self.dest)
         
         if img_id == 0:
             myquery = """
@@ -64,8 +64,7 @@ class NewsHandler(MailHandler.MailHandler):
             """ % (self.NEWS_TBL, SITE,
                    date, sender, subject, re.escape(text), img_id)
             
-        self.execQuery(myquery)
-        self.id    = self.getid(db, self.NEWS_TBLSQ)
+        self.id    = self.execQuery(myquery)
         self.log.debug("[NewsHandler]: add_news -> id='%d'" % self.id)
         return self.id
 
@@ -102,7 +101,7 @@ class NewsHandler(MailHandler.MailHandler):
 
         # Handle image part of a news
         else:
-            # This seems suspect
+            # This part is not image but html
             if type(body) == type(""):
                 self.log.debug("[NewsHandler]: text part")
                 if id_img != 0:
@@ -113,6 +112,10 @@ class NewsHandler(MailHandler.MailHandler):
             # This part is not a text one
             else:
                 maintype, subtype = body.get_content_type().split('/',1)
+                self.log.debug("[NewsHandler]: maintype='%s'" \
+                               % maintype + \
+                               " subtype='%s'" \
+                               % subtype)
 
                 # We insert an image in the data base
                 if maintype == "image":
