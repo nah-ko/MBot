@@ -23,10 +23,7 @@ SECTION	= 'NEWS'
 class NewsHandler(MailHandler.MailHandler):
 
 	def add_img(self, filename, filetype, filedata, TNfiledata, filesize):
-		if self.DB_TYPE == 'mysql':
-			db = MySQLdb.connect(db=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
-		elif self.DB_TYPE == 'postgresql':
-			db = pg.connect(dbname=self.DB, host=self.HOST, user=self.DB_USER, passwd=self.DB_PASS)
+		db      = self.dbconn()
 		news_id	= self.id
 		desc	= "[News] " + filename
 		if self.DB_TYPE == 'mysql':
