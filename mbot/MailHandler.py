@@ -15,13 +15,15 @@ import rfc822
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
     def __init__(self, section, log, params,
-                 dest="sended for", sender="sended by", date="sended the"):
-        self.section = section
-        self.log     = log
-        self.params  = params
-        self.date    = date
-        self.sender  = sender
-        self.dest    = dest
+                 dest="sended for", sender="sended by",
+		 date="sended the", multipart_mesg="false"):
+        self.section        = section
+        self.log            = log
+        self.params         = params
+        self.date           = date
+        self.sender         = sender
+        self.dest           = dest
+        self.multipart_mesg = multipart_mesg
 
     def read_conf(self, config, properties):
         ''' Config parser '''
