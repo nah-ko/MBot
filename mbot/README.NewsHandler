@@ -8,7 +8,8 @@ News DB is to be created according to the structure behind:
 CREATE TABLE news (
   id int(100) unsigned NOT NULL auto_increment,
   site text,
-  date text,
+  date datetime, # This is for MySQL table
+  date timestamp, # This is for PostgreSQL table
   de text,
   message text,
   id_img int(4) NOT NULL default '0',

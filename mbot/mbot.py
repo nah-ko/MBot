@@ -17,7 +17,7 @@
 # $Id$
 
 import sys, os, getopt, email, smtplib, mimify
-import ConfigParser, time, socket
+import ConfigParser, time, socket, rfc822
 
 # All this will be used to create the response mail
 from email import Encoders
@@ -111,7 +111,7 @@ def main():
 	sender  = mesg.get('From')
 	subject = mime_decode_header(mesg.get('Subject'))
 	mesg_id = mesg.get('Message-Id')
-	date    = mesg.get('Date')
+	date    = time.strftime('%Y-%m-%d %H:%M:%S', rfc822.parsedate(mesg.get('Date')))
 	dest    = mesg.get('To')
 	
 	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' " \
