@@ -10,8 +10,8 @@
 # $Id$
 
 import MailHandler
-import sys,os,email
-import MySQLdb
+import sys, os, email
+import MySQLdb, re
 
 HOST	= "localhost"
 DB 	= "db"
@@ -58,7 +58,7 @@ class NewsHandler(MailHandler.MailHandler):
 			SITE	= "test"
 		elif dest == "rein-team.darktech.org":
 			SITE	= "reinteam"
-		myquery = "insert into %s (site,date,de,message,id_img) values('%s','%s','%s','%s','%d')" % (TABLE, SITE, date, sender, text, img_id)
+		myquery = "insert into %s (site,date,de,message,id_img) values('%s','%s','%s','%s','%d')" % (TABLE, SITE, date, sender, re.escape(text), img_id)
 		mycur	= db.cursor()
 		mycur.execute(myquery)
 		self.id	= db.insert_id()
