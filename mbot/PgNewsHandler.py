@@ -46,7 +46,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
 
         self.log.notice("[PgNewsHandler]: execReadQuery")
         db      = self.dbconn()
-        req     = db.query(sql).dictresult()
+        req     = db.query(sql).getresult()
         self.log.debug("[PgNewsHandler]: execReadQuery, req = %s" % req)
         db.close()
 

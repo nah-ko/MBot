@@ -61,8 +61,7 @@ class NewsHandler(MailHandler):
 	list = self.execReadQuery(myquery)
 	text = "\tid\t|\tid_img\t|\tsite\t|\tdate\t|\tde\t|\tsujet\t\n"
 	for (ID, ID_IMG, SITE, DATE, DE, SUJET) in list:
-	    text = text +
-	           "\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\n" % (ID,
+	    text = text + "\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\n" % (ID,
 		   ID_IMG, SITE, DATE, DE, SUJET)
 	self.log.debug("[NewsHandler]: list = %s" % list)
 
@@ -132,7 +131,7 @@ class NewsHandler(MailHandler):
 	import string
 
 	if string.strip(self.params)[:7] == 'getlist':
-	    self.log.debug("[NewsHandler]: found «getlist» buzzword")
+	    self.log.debug("[NewsHandler]: found getlist buzzword")
 	    result = result + self.getlist()
 
 	else:
