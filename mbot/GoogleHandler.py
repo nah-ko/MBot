@@ -15,7 +15,7 @@ import ConfigParser
 
 from MailHandler import MailHandler
 
-class GoogleHandler(MailHandler.MailHandler):
+class GoogleHandler(MailHandler):
     "Handle getting url given in mail"
     
     def read_conf(self, ConfObj):

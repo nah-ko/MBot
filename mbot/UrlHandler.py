@@ -14,7 +14,7 @@ import string, urllib, mimetools, urlparse
 
 from MailHandler import MailHandler
 
-class UrlHandler(MailHandler.MailHandler):
+class UrlHandler(MailHandler):
     "Handle getting url given in mail"
     
     def read_conf(self, ConfObj):

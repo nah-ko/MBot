@@ -18,7 +18,7 @@ from MailHandler import MailHandler
 
 # This class does not provides SGBD specific code, see MyNewsHandler
 # and PgNewsHandler
-class NewsHandler(MailHandler.MailHandler):
+class NewsHandler(MailHandler):
     """ Manage adding news in a data base """
 
     def read_conf(self, ConfObj):
