@@ -21,6 +21,7 @@ import ConfigParser, time, socket
 
 # All this will be used to create the response mail
 from email import Encoders
+from email.Utils import formatdate
 from email.MIMEBase import MIMEBase
 from email.MIMEAudio import MIMEAudio
 from email.MIMEMultipart import MIMEMultipart
@@ -132,9 +133,10 @@ def main():
 
 	# we prepare the response
 	resp = MIMEMultipart()
-	resp['Subject']     =  'Re: %s' % subject
+	resp['Subject']     = 'Re: %s' % subject
 	resp['To']          = sender
-	resp['In-Reply-To'] =  mesg_id
+	resp['In-Reply-To'] = mesg_id
+	resp['Date']        = formatdate(time.mktime(time.localtime()), True)
 
 	# we initialize a handler corresponding to the given subject
 	# first we create a dict hs which associate handler with subject
