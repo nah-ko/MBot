@@ -39,6 +39,21 @@ class MyNewsHandler(NewsHandler.NewsHandler):
 
         return self.id
     
+    def execReadQuery(self, sql):
+        """ Execute the given query """
+
+	self.log.notice("[MyNewsHandler]: execReadQuery")
+        db    = self.dbconn()
+        mycur = db.cursor()
+        mycur.execute(sql)
+	text  = "\tid\t|\tid_img\t|\tsite\t|\tdate\t|\tde\t|\tsujet\t\n"
+	for (ID, ID_IMG, SITE, DATE, DE, SUJET) in mycur.fetchall():
+	    text = text + "\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\t|\t%s\n" % (ID,
+		ID_IMG, SITE, DATE, DE, SUJET)
+        db.close()
+
+        return text
+    
     def getid(self, conn, table=None):
         """ Get the next available news Id """
 
