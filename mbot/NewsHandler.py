@@ -27,8 +27,9 @@ class NewsHandler(MailHandler.MailHandler):
 		db 	= MySQLdb.connect(db=DB, host=HOST, user=DB_USER, passwd=DB_PASS)
 		date 	= self.date
 		sender 	= self.sender
-		query 	= "insert into " + TABLE + " values('','" + SITE + "','" + date + "','" + sender + "','" + text + "')"
-		print query
+		myquery = "insert into " + TABLE + " values('','" + SITE + "','" + date + "','" + sender + "','" + text + "')"
+		mycur	= db.cursor()
+		mycur.execute(myquery)
 		db.close()
 
 	def handle(self, body):
