@@ -160,4 +160,52 @@ En premier lieu, on a défni dans le fichier de configuration deux options:
  Le corps du message contient les mots clefs, ceux-ci sont alors quotés
  afin d'être passé dans la chaine de recherche qui va être envoyée à Google.
  Il y a autant de recherches qu'il y a de lignes dans le message.
+\layout Standard
+
+Le retour est alors constitué d'autant de pièces jointe au format HTML qu'il
+ y a eu de recherches, donc de lignes dans le mail d'origine.
+\layout Subsection
+
+News
+\layout Standard
+
+Ici nous nous servons d'une bonne part des infos contenues dans un mail;
+ expéditeur, corps du message et sujet ce sont les éléments qui servent
+ ici.
+\layout Standard
+
+Le fonctionnement de base est l'enregistrement de toutes ces données dans
+ une base (PostgreSQL ou MySQL) afin de servir à une page de nouvelles sur
+ un site web, mais ceci est un exemple, libre à vous de vous en servir autrement.
+ Une autre fonctionnalitée est l'enregistrement d'une image se trouvant
+ en pièce jointe du mail, cette image étant optionnelle nous en parlerons
+ de menière succinte ici.
+\layout Standard
+
+Depuis peu ce handler est subdivisé en deux parties qui dissocient le fonctionne
+ment selon la base de données indiqué dans le fichier de configuration (décrit
+ plus loin).
+ Les fonctions communes sont dans NewsHandler.py, dans la configuration on
+ mentionne le handler «éxécutant», soit PgNewsHandler.py, soit MyNewsHandler.py.
+\layout Standard
+
+On utilise donc le sujet du mail afin d'en extraire le sujet de la nouvelle,
+ le nom de l'expéditeur sert à donner un auteur à la nouvelle et le corps
+ du message...
+ oui, c'est la nouvelle en elle même ! ;) Le handler agit de la manière
+ suivante: il commence tout d'abord à vérifier ce qui existe dans le mail,
+ texte ou html voire même une image, selon ce qu'il trouve il agit de manière
+ différente:
+\layout Itemize
+
+Pour un texte brut il va le traiter directement et l'ajouter aux nouvelles
+ existantes.
+\layout Itemize
+
+Pour un texte en html il va le décoder puis le traiter de la même manière.
+\layout Standard
+
+Si il y a une image en pièce jointe alors il traite le texte puis s'occupe
+ de l'image, alors il renseigne la base où sont les nouvelles que tel nouvelle
+ est liée à tel image.
 \the_end
