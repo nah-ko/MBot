@@ -21,6 +21,7 @@ class MyNewsHandler(NewsHandler.NewsHandler):
 
     def dbconn(self):
         """ Connect to the data base """
+
         self.log.notice("[MyNewsHandler]: dbconn")
         db = MySQLdb.connect(db=self.db, host=self.host,
                              user=self.db_user, passwd=self.db_pass)
@@ -28,6 +29,8 @@ class MyNewsHandler(NewsHandler.NewsHandler):
 
     def execQuery(self, sql):
         """ Execute the given query """
+
+	self.log.notice("[MyNewsHandler]: execQuery")
         db    = self.dbconn()
         mycur = db.cursor()
         mycur.execute(sql)

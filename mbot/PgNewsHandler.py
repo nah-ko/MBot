@@ -22,6 +22,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
 
     def dbconn(self):
         """ Connect to the data base """
+
         self.log.notice("[PgNewsHandler]: dbconn")
         db = pg.connect(dbname=self.db, host=self.host,
                         user=self.db_user, passwd=self.db_pass)
@@ -30,6 +31,8 @@ class PgNewsHandler(NewsHandler.NewsHandler):
 
     def execQuery(self, sql):
         """ Execute the given query """
+
+        self.log.notice("[PgNewsHandler]: execQuery")
         db      = self.dbconn()
         req     = db.query(sql)
         self.id = self.getid(db, self.news_tblsq)
@@ -39,6 +42,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
 
     def getid(self, conn, table=None):
         """ Get the next available news Id """
+
         self.log.notice("[PgNewsHandler]: getid")
 
         # result return a tuple which contains (value,?)  where
@@ -51,6 +55,7 @@ class PgNewsHandler(NewsHandler.NewsHandler):
 
     def add_img(self, filename, filetype, filedata, TNfiledata, filesize):
         """ Add an image as a Large Object in the database """ 
+
         self.log.notice("[PgNewsHandler]: add_img")
 
         news_id	= self.id
