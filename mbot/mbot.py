@@ -69,6 +69,9 @@ if __name__ == "__main__":
     elif subject.find('google') == 0:
         h = GoogleHandler.GoogleHandler(subject[6:])
         
+    elif subject.find('news') == 0:
+        h = NewsHandler.NewsHandler(subject)
+        
     elif subject.find('|') == 0:
         h = PipeHandler.PipeHandler(subject[1:])
         
