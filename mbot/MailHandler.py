@@ -10,6 +10,8 @@
 
 # $Id$
 
+import rfc822
+
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
     def __init__(self, section, log, params,
@@ -42,13 +44,8 @@ class MailHandler:
         """ Check if the user is authorized to use the handler """
 
 	# Use email part of sender
+        (name, sender) = rfc822.parseaddr(self.sender)
 	self.log.debug("[check_lists]: sender = %s" % self.sender)
-	if self.sender.find('<'):
-	    deb = self.sender.find('<') + 1
-	    fin = self.sender.find('>')
-	    sender = self.sender[deb:fin]
-	else:
-	    sender = self.sender
 	self.log.debug("[check_lists]: sender(email) = %s" % sender)
 
         # First check black list
