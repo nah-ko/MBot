@@ -102,9 +102,9 @@ def main():
 	date    = mesg.get('Date')
 	dest    = mesg.get('To')
 	
-	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' " +
-		   "with subject '%s'" \
-		   % (date, sender, mesg_id, dest, subject))
+	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' " \
+		   % (date, sender, mesg_id, dest) + \
+		   "with subject '%s'" % subject)
 
 	# we only consider (parse) the text/plain parts of message
 	if mesg.is_multipart():
