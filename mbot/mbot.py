@@ -48,7 +48,8 @@ if __name__ == "__main__":
     if mesg.is_multipart():
         body = []
         for part in mesg.walk():
-            body.append(part)
+	    if part.get_content_type() == "text/plain":
+                body.append(part.get_payload(decode=1))
     else:
         body = [mesg.get_payload()]
 
