@@ -75,7 +75,7 @@ class NewsHandler(MailHandler.MailHandler):
 			id = conn.query("select currval('%s')" % table).getresult()[0][0]
 			# getresult()[0][0] <-- nedded because query
 			# result return a tuple which contains (value,?)
-			# where «value» is the ID.
+			# where 'value' is the ID.
 
 		return id
 	

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 # mbot - a mail handling robot
 #
@@ -31,15 +31,15 @@ class GoogleHandler(MailHandler.MailHandler):
         for line in body.split('\n'):
             if line != '' and line is not None:
                 url = self.BASE_URL + urllib.quote(line)
-                conn = httplib.HTTPConnection(self.HOST)
-                conn.request("GET", url)
-                r = conn.getresponse()
+		conn = httplib.HTTPConnection(self.HOST)
+		conn.request("GET", url)
+		r = conn.getresponse()
 
-                type = r.msg.gettype()
-                data = r.read()
+		type = r.msg.gettype()
+		data = r.read()
 
-                conn.close()
-                
-                result.append((type, data))
+		conn.close()
+		
+		result.append((type, data))
 
         return result

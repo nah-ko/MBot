@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 # mbot - a mail handling robot
 #
@@ -18,6 +18,7 @@ class UrlHandler(MailHandler.MailHandler):
     def handle(self, body):
         """ The body may contain one url per line """
         result = []
+	size   = 0
 
         for line in body.split():
             if line != '' and line is not None:
@@ -27,8 +28,14 @@ class UrlHandler(MailHandler.MailHandler):
                                              urllib.quote(params),
                                              urllib.quote(q, '/='),
                                              urllib.quote(f)))
-                data  = urllib.urlopen(url)
-                result.append((data.info().gettype(), data.read()))
+		size += urllib.urlopen(url).info().getheader("Content-Length")
+		if size < self.ATTSIZE:
+			data  = urllib.urlopen(url)
+			result.append((data.info().gettype(), data.read()))
+		else:
+			type = "text/plain"
+			data = "Attachment size exceed %s" % self.ATTSIZE
+			result.append((type, data))
 
         return result
             

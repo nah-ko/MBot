@@ -14,3 +14,7 @@ To install that mail bot, just add a line in your mail alias file:
 
 If you use exim, be sure to add the option 'pipe_as_creator' to your
 configuration, in the 'address_pipe' section
+
+ATTENTION !
+This version will work with python 2.3.
+Please take care of deps file which give modules dependancies.

@@ -1,9 +1,9 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 # mbot - a mail handling robot
 #
 # Author:  Dimitri Fontaine <dim@tapoueh.org>
-# Author:  Christophe Truffier <toffe@nah-ko..org>
+# Author:  Christophe Truffier <toffe@nah-ko.org>
 #
 # This code is licensed under the GPL.
 # Get yourself a version here : http://www.gnu.org/copyleft/gpl.html

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 
 # mbot - a mail handling robot
 #
@@ -28,45 +28,33 @@ from email.MIMEImage import MIMEImage
 from email.MIMEText import MIMEText
 from mimify import mime_decode_header
 
-import MailHandler, UrlHandler, GoogleHandler, PipeHandler, NewsHandler
+import MailHandler
+import Logger
 
 # default values
-global DEBUG, LOGFILE, MBOT_ADDRESS, CONFIG_FILE
+global MBOT_ADDRESS, MAILSIZE, ATTSIZE, LOG_LEVEL, MODULES
 
-DEBUG        = False
-LOGFILE      = "/tmp/mbot.log"
 MBOT_ADDRESS = "mbot@localhost"
-
+MAILSIZE     = 1024000
+ATTSIZE      = 256000
 CONFIG_FILE  = "./mbot.conf"
-
-def dolog(message):
-	''' Turning log formating into standard way '''
-
-	# Log format:
-	# [Short day] [Numeric day] [Time] [Hostname] [Service[Pid]] : [Message]
-	Time = time.strftime("%b %d %H:%M:%S", time.localtime())
-	Hostname = socket.gethostname()
-	Service = os.path.basename(sys.argv[0])
-	Pid = int(os.getpid())
-	Message = message
-	
-	# Log line
-	logline = "%s %s %s[%d] : %s" % (Time, Hostname, Service, Pid, Message)
-	
-	return logline
+LOG_LEVEL    = "debug"
+MODULES      = ""
 
 def read_defaults(configfile = CONFIG_FILE):
 	''' Reading configuration file '''
 
-	global DEBUG, LOGFILE, MBOT_ADDRESS
+	global MBOT_ADDRESS, MAILSIZE, ATTSIZE, LOG_LEVEL, MODULES
 	
 	config = ConfigParser.ConfigParser()
 	config.read(configfile)
 	
 	# Reading options
-	DEBUG = config.get('DEFAULT','debug')
-	MBOT_ADDRESS = config.get('DEFAULT','mbot_address')
-	LOGFILE = config.get('DEFAULT','logfile')
+	MBOT_ADDRESS = config.get('DEFAULT','MBOT_ADDRESS')
+	MAILSIZE     = config.get('DEFAULT','mailsize')
+	ATTSIZE      = config.get('DEFAULT','attsize')
+	LOG_LEVEL    = config.get('DEFAULT','log_level')
+	MODULES      = eval(config.get('DEFAULT','modules'))
 
 	return config
 
@@ -84,11 +72,13 @@ def usage():
 
 def main():
 	""" Here we do the job """
-	global DEBUG, LOGFILE, MBOT_ADDRESS, CONFIG_FILE
+	global MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL, MODULES
 
+	log         = Logger.Logger(LOG_LEVEL)
 	config_file = CONFIG_FILE
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "c:")
+		log.debug("Options: %s - Arguments: %s" % (opts, args))
 	except getopt.GetoptError:
 		# print help information and exit:
 		usage()
@@ -97,13 +87,11 @@ def main():
 	for o, a in opts:
 		if o == "-c":
 			config_file = a
+	log.debug("Config file: %s" % config_file)
 
 	Conf = read_defaults(config_file)
 	
-	logfile = open(LOGFILE, 'a')
-	logfile.write(dolog("Using config file %s\n" % config_file))
-
-	DEBUG = DEBUG == 'True' or DEBUG == 'true'
+	log.notice("Using config file %s\n" % config_file)
 
 	# we read the mail
 	mesg = read_email()
@@ -113,6 +101,7 @@ def main():
 	mesg_id = mesg.get('Message-Id')
 	date    = mesg.get('Date')
 	dest    = mesg.get('To')
+	log.notice("Incoming mail: the %s, from '%s' [%s] to '%s' with subject '%s'" % (date, sender, mesg_id, dest, subject))
 
 	# we only consider (parse) the text/plain parts of message
 	if mesg.is_multipart():
@@ -125,8 +114,7 @@ def main():
 	else:
 		body = [mesg.get_payload()]
 
-	logfile.write(dolog("message: %s %s %s \n" %
-			    (mesg_id, sender, subject)))
+	log.notice("message: %s %s %s \n" % (mesg_id, sender, subject))
 
 	# we prepare the response
 	resp = MIMEMultipart()
@@ -135,20 +123,40 @@ def main():
 	resp['In-Reply-To'] =  mesg_id
 
 	# we initialize a handler corresponding to the given subject
-	if subject.find('wget') == 0:
-		h = UrlHandler.UrlHandler(subject[4:])
+	# first we create a new dict reverse from module one
+	rev_modules = {}
+	for m in MODULES:
+		log.debug("m: %s" % m)
+		for s in MODULES[m]:
+			log.debug("s: %s" % s)
+			rev_modules[s] = m
+	# now we can try to import appropriate module and use it
+	h = None
+	for s in rev_modules:
+		if subject.find(s) == 0:
+			handler = rev_modules[s]
+			log.debug("using handler: %s" % handler)
+			try:
+				handlerModule = __import__(handler)
+				log.notice("Using handler: %s" % handler)
+				handlerClass = getattr(handlerModule, handler)
+				log.debug("handlerClass: %s" % handlerClass)
+				h = handlerClass(subject[len(s):], dest, sender, date)
+				log.debug("Instanciate handler %s for '%s'" % (handler, subject[len(s):]))
+			except:
+				log.debug("Impossible to load handler: %s" % handler)
+				log.debug("    %s: %s" %( sys.exc_type, sys.exc_value))
+			break
 
-	elif subject.find('google') == 0:
-		h = GoogleHandler.GoogleHandler(subject[6:])
+	if h is None:
+		log.debug("No handler found for '%s'" % subject)
+		resp = "Sorry, mbot is not configured to handle your request"
+		s = smtplib.SMTP()
+		s.connect()
+		s.sendmail(MBOT_ADDRESS, sender, resp)
+		s.close()
+		sys.exit()
 
-	elif subject.find('news') == 0:
-		h = NewsHandler.NewsHandler(subject[4:], dest, sender, date)
-
-	elif subject.find('|') == 0:
-		h = PipeHandler.PipeHandler(subject[1:])
-
-	else:
-		h = MailHandler.MailHandler(subject)
 
 	# then we read the handler config
 	h.read_conf(Conf)
@@ -156,10 +164,11 @@ def main():
 	for part in body:
 		for (type, out) in h.handle(part):
 			maintype, subtype = type.split('/', 1)
+			log.debug("%s part type" % maintype)
 			if maintype == 'text':
 				data = MIMEText(out, _subtype=subtype)
-				if DEBUG:
-					print out
+				if LOG_LEVEL == 'debug':
+					log.debug("Result is:\n%s" % out)
 
 			elif maintype == 'image':
 				data = MIMEImage(out, _subtype=subtype)
@@ -173,13 +182,12 @@ def main():
 				Encoders.encode_base64(data)
 
 			# When in debug mode, we do not send back mail
-			if not DEBUG:
+			if not LOG_LEVEL == 'debug':
 				resp.attach(data)
 
 	# Then we send the mail
-	if not DEBUG:
-		logfile.write(dolog("Sending from %s to  %s \n" %
-				    (MBOT_ADDRESS, sender)))
+	if not LOG_LEVEL == 'debug':
+		log.notice("Sending from %s to  %s \n" % (MBOT_ADDRESS, sender))
 		
 		s = smtplib.SMTP()
 		s.connect()
