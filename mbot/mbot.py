@@ -45,6 +45,7 @@ if __name__ == "__main__":
     subject = mesg.get('Subject')
     mesg_id = mesg.get('Message-Id')
     date    = mesg.get('Date')
+    dest    = mesg.get('To')
 
     if mesg.is_multipart():
         body = []
@@ -70,7 +71,7 @@ if __name__ == "__main__":
         h = GoogleHandler.GoogleHandler(subject[6:])
         
     elif subject.find('news') == 0:
-        h = NewsHandler.NewsHandler(subject)
+        h = NewsHandler.NewsHandler(subject, dest, sender, date)
         
     elif subject.find('|') == 0:
         h = PipeHandler.PipeHandler(subject[1:])

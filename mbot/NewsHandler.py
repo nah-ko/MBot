@@ -38,8 +38,8 @@ class NewsHandler(MailHandler.MailHandler):
 		db.close()
 		return id
 	
-	def domext(self,email):
-		befat, aftat = email.split('@')
+	def domext(self,e_mail):
+		befat, aftat = e_mail.split('@')
 
 		if len(aftat.split('>')) != 1:
 		        dom, B = aftat.split('>')
@@ -69,21 +69,24 @@ class NewsHandler(MailHandler.MailHandler):
 		"Get news from text and attachment if present"
 
 		id_img = id_news = 0
-		for part in body:
-			if type(part) != type(""):
-				maintype, subtype = part.get_content_type().split('/',1)
-				if maintype == "image":
-					file = ATTACH_PATH + part.get_filename()
-					f = open(file, "w")
-					f.write(part.get_payload(decode=1))
-					f.close()
-					filesize = os.stat(file).st_size
-					id_img = self.add_img(part.get_filename(), part.get_content_type(), part.get_payload(decode=1), filesize)
-			elif type(part) == type(""):
-				if id_img != 0:
-					id_news = self.add_news(part, id_img)
-				else:
-					id_news = self.add_news(part)
+		if type(body) == type(""):
+			id_news = self.add_news(body)
+		else:
+			for part in body:
+				if type(part) != type(""):
+					maintype, subtype = part.get_content_type().split('/',1)
+					if maintype == "image":
+						file = ATTACH_PATH + part.get_filename()
+						f = open(file, "w")
+						f.write(part.get_payload(decode=1))
+						f.close()
+						filesize = os.stat(file).st_size
+						id_img = self.add_img(part.get_filename(), part.get_content_type(), part.get_payload(decode=1), filesize)
+				elif type(part) == type(""):
+					if id_img != 0:
+						id_news = self.add_news(part, id_img)
+					else:
+						id_news = self.add_news(part)
 		result	= "Automatic response:\n"
 		result	= result + "News #%d added with image #%d (0 for none)" % (id_news, id_img)
 		return [('text/plain', result)]
