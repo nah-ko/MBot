@@ -10,8 +10,6 @@
 
 # $Id$
 
-SECTION = ""
-
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
     def __init__(self, section, log, params,
@@ -26,6 +24,15 @@ class MailHandler:
     def read_conf(self, config):
         ''' Config parser '''
         pass
+    
+    def read_conf(self, config, properties):
+        ''' Config parser '''
+        for p in properties:
+            if config.has_option(self.section, p):
+                setattr(self, p, config.get(self.section, p))
+            else:
+                setattr(self, p, None)
+
     
     def handle(self, body):
         return [('text/plain', body)]

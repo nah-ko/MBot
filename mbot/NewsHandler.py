@@ -14,12 +14,19 @@ import MailHandler
 import sys, os, email, re, Image
 import ConfigParser
 
-SECTION    = 'NEWS'
-
 # This class does not provides SGBD specific code, see MyNewsHandler
 # and PgNewsHandler
 class NewsHandler(MailHandler.MailHandler):
     """ Manage adding news in a data base """
+
+    def read_conf(self, ConfObj):
+        ''' Getting config options for this handler '''
+        self.log.notice("[NewsHandler]: read_conf")
+        self.read_conf(ConfObj,
+                       ['host', 'db', 'db_user', 'db_pass',
+                        'photo_tbl', 'photo_tblsq',
+                        'news_tbl', 'news_tblsq',
+                        'site', 'attach_path', 'tnx', 'tny'])
 
     def getsite(self, e_mail):
         """ Get the site information """
@@ -67,23 +74,6 @@ class NewsHandler(MailHandler.MailHandler):
         self.id    = self.execQuery(myquery)
         self.log.debug("[NewsHandler]: add_news -> id='%d'" % self.id)
         return self.id
-
-    def read_conf(self, ConfObj):
-        ''' Getting config options for this handler '''
-
-        self.log.notice("[NewsHandler]: read_conf")
-        self.HOST        = ConfObj.get(SECTION,'host')
-        self.DB          = ConfObj.get(SECTION,'db')
-        self.DB_USER     = ConfObj.get(SECTION,'db_user')
-        self.DB_PASS     = ConfObj.get(SECTION,'db_pass')
-        self.PHOTO_TBL   = ConfObj.get(SECTION,'photo_tbl')
-        self.PHOTO_TBLSQ = ConfObj.get(SECTION,'photo_tblsq')
-        self.NEWS_TBL    = ConfObj.get(SECTION,'news_tbl')
-        self.NEWS_TBLSQ  = ConfObj.get(SECTION,'news_tblsq')
-        self.SITE        = ConfObj.get(SECTION,'site')
-        self.ATTACH_PATH = ConfObj.get(SECTION,'attach_path')
-        self.tnX         = ConfObj.get(SECTION,'tnx')
-        self.tnY         = ConfObj.get(SECTION,'tny')
 
     def handle(self, body):
         "Get news from text and attachment if present"
