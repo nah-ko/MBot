@@ -17,7 +17,10 @@ class PipeHandler(MailHandler.MailHandler):
     
     def handle(self, body):
         """ The body contains a input file """
+
+	self.log.notice("[PipeHandler]")
         command = self.params
+	self.log.debug("[PipeHandler]: command='%s'" % command)
 
         pout, pin = popen2.popen4(command)
         pin.write(body)
@@ -25,6 +28,7 @@ class PipeHandler(MailHandler.MailHandler):
         
         result = pout.read()
         pout.close()
+	self.log.debug("[PipeHandler]: result='%s'" % result)
         
         return [('text/plain', result)]
             

@@ -14,7 +14,8 @@ SECTION = ""
 
 class MailHandler:
     " To handle a mail, you'll have to inheritate from this class "
-    def __init__(self, params, dest="sended for", sender="sended by", date="sended the"):
+    def __init__(self, log, params, dest="sended for", sender="sended by", date="sended the"):
+        self.log    = log
         self.params = params
 	self.date   = date
 	self.sender = sender

@@ -15,6 +15,9 @@ To install that mail bot, just add a line in your mail alias file:
 If you use exim, be sure to add the option 'pipe_as_creator' to your
 configuration, in the 'address_pipe' section
 
+In order to user NewsHandler you should use sql table cration who are in
+news directory. One for each server type, MySQL or PostgreSQL.
+
 ATTENTION !
 This version will work with python 2.3.
 Please take care of deps file which give modules dependancies.

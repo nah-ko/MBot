@@ -19,3 +19,6 @@ CREATE TABLE news (
 
 For Image DB I've used the article written by Florian Dittmer and readable here :
 http://www.phpbuilder.com/columns/florian19991014.php3
+
+I've had into «news» directory the sql files to create apropriates
+tables.

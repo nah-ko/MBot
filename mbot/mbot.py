@@ -32,27 +32,23 @@ import MailHandler
 import Logger
 
 # default values
-global MBOT_ADDRESS, MAILSIZE, ATTSIZE, LOG_LEVEL, MODULES
+global MBOT_ADDRESS, LOG_LEVEL, MODULES
 
-MBOT_ADDRESS = "mbot@localhost"
-MAILSIZE     = 1024000
-ATTSIZE      = 256000
 CONFIG_FILE  = "./mbot.conf"
+MBOT_ADDRESS = "mbot@localhost"
 LOG_LEVEL    = "debug"
 MODULES      = ""
 
 def read_defaults(configfile = CONFIG_FILE):
 	''' Reading configuration file '''
 
-	global MBOT_ADDRESS, MAILSIZE, ATTSIZE, LOG_LEVEL, MODULES
+	global MBOT_ADDRESS, LOG_LEVEL, MODULES
 	
 	config = ConfigParser.ConfigParser()
 	config.read(configfile)
 	
 	# Reading options
 	MBOT_ADDRESS = config.get('DEFAULT','MBOT_ADDRESS')
-	MAILSIZE     = config.get('DEFAULT','mailsize')
-	ATTSIZE      = config.get('DEFAULT','attsize')
 	LOG_LEVEL    = config.get('DEFAULT','log_level')
 	MODULES      = eval(config.get('DEFAULT','modules'))
 
@@ -74,11 +70,9 @@ def main():
 	""" Here we do the job """
 	global MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL, MODULES
 
-	log         = Logger.Logger(LOG_LEVEL)
 	config_file = CONFIG_FILE
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "c:")
-		log.debug("Options: %s - Arguments: %s" % (opts, args))
 	except getopt.GetoptError:
 		# print help information and exit:
 		usage()
@@ -87,11 +81,15 @@ def main():
 	for o, a in opts:
 		if o == "-c":
 			config_file = a
-	log.debug("Config file: %s" % config_file)
 
 	Conf = read_defaults(config_file)
+	log  = Logger.Logger(LOG_LEVEL)
 	
 	log.notice("Using config file %s\n" % config_file)
+	log.debug("Configuration values: MBOT_ADDRESS='%s'" \
+		      % MBOT_ADDRESS + \
+		      "LOG_LEVEL='%s' MODULES='%s'" \
+		      % (LOG_LEVEL, MODULES))
 
 	# we read the mail
 	mesg = read_email()
@@ -145,7 +143,7 @@ def main():
 				log.notice("Using handler: %s" % handler)
 				handlerClass = getattr(handlerModule, handler)
 				log.debug("handlerClass: %s" % handlerClass)
-				h = handlerClass(subject[len(s):],
+				h = handlerClass(log, subject[len(s):],
 						 dest, sender, date)
 				log.debug("Instanciate handler %s for '%s'" \
 					  % (handler, subject[len(s):]))
