@@ -34,10 +34,12 @@ import Logger
 # default values
 global MBOT_ADDRESS, LOG_LEVEL
 
-CONFIG_FILE  = "./mbot.conf"
+ProgPath     = os.path.dirname(os.path.realpath(sys.argv[0]))
+CONFIG_FILE  = ProgPath + "/mbot.conf"
 MBOT_ADDRESS = "mbot@localhost"
 LOG_LEVEL    = "debug"
 SECTIONS     = ""
+RELEASE      = "0.2"
 
 def read_defaults(configfile = CONFIG_FILE):
 	''' Reading configuration file '''
@@ -67,30 +69,35 @@ def read_email():
 
 	return mesg
 
-def usage():
-	""" print out the command usage """
-	command = os.path.basename(sys.argv[0])
-	print "%s [-c <config_file>]" % command
-
 def main():
 	""" Here we do the job """
-	global MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL
+	global RELEASE, MBOT_ADDRESS, CONFIG_FILE, LOG_LEVEL
 
-	config_file = CONFIG_FILE
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "c:")
-	except getopt.GetoptError:
-		# print help information and exit:
-		usage()
-		sys.exit(2)
+	from optparse import OptionParser
 
-	for o, a in opts:
-		if o == "-c":
-			config_file = a
+	# Define usage and give command line options to parser object
+	Usage  = "usage: %prog [options]"
+	Ver    = "%prog " + RELEASE
+	Parser = OptionParser(usage = Usage, version = Ver)
+	Parser.add_option("-c", "--configfile", action="store", type="string",
+	                  dest="ConfFile", metavar="FILE",
+			  default=CONFIG_FILE,
+			  help="Configuration file location")
+	(options, args) = Parser.parse_args()
+	confErrMsg      = ""
+
+	if os.path.exists(options.ConfFile):
+	    config_file = options.ConfFile
+	else:
+	    confErrMsg  = "Sorry, %s file doesn't exists using " \
+	                  "default one instead" % options.ConfFile
+	    config_file = CONFIG_FILE
 
 	Conf = read_defaults(config_file)
 	log  = Logger.Logger(LOG_LEVEL)
 	
+	if confErrMsg != "":
+	    log.err(confErrMsg)
 	log.notice("Using config file %s\n" % config_file)
 	log.debug("Configuration values: MBOT_ADDRESS='%s'" \
 		      % MBOT_ADDRESS + \
