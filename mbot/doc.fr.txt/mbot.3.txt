@@ -1,0 +1,9 @@
+Handler Pipe
+
+Fonctionnement
+
+Grâce à ce handler il est possible de procédé à l'execution d'une
+commande particulière; le contenu du mail sera utilisé comme données
+envoyées au pipe.
+Ici la réponse qui est retournée est le résultat de "corps_du_mail |
+commande".

@@ -1,0 +1,13 @@
+Handler Mail
+
+Fonctionnement
+
+Ce handler est utilisé pour tous les autres, il permet la récupération
+de données tel que l'expéditeur, le destinataire etc.
+Ces infos sont utilisées par les autres handler pour leurs traitements
+respectifs.
+
+Dans ce handler on ne fait aucun traitement, il renvoies donc le mail
+d'origine si ce dernier n'a pas un sujet contenant un mot clé.
+La méthode "__init__" permet d'initialiser certaines variables décrites
+plus haut.
