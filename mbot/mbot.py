@@ -30,6 +30,8 @@ from mimify import mime_decode_header
 import MailHandler, UrlHandler, GoogleHandler, PipeHandler, NewsHandler
 
 # default values
+global DEBUG, LOGFILE, MBOT_ADDRESS, CONFIG_FILE
+
 DEBUG        = False
 LOGFILE      = "/tmp/mbot.log"
 MBOT_ADDRESS = "mbot@localhost"
@@ -84,10 +86,10 @@ def usage():
 	command = os.path.basename(sys.argv[0])
 	print "%s [-c <config_file>]" % command
 
-
-
 def main():
 	""" Here we do the job """
+	global DEBUG, LOGFILE, MBOT_ADDRESS, CONFIG_FILE
+
 	config_file = CONFIG_FILE
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "c:")
@@ -101,8 +103,11 @@ def main():
 			config_file = a
 
 	Conf = read_defaults(config_file)
+	
 	logfile = open(LOGFILE, 'a')
 	logfile.write(dolog("Using config file %s\n" % config_file))
+
+	DEBUG = DEBUG == 'True' or DEBUG == 'true'
 
 	# we read the mail
 	mesg = read_email()
@@ -178,7 +183,7 @@ def main():
 	# Then we send the mail
 	if not DEBUG:
 		logfile.write(dolog("Sending from %s to  %s \n" %
-				    (MBOT_ADRESS, sender)))
+				    (MBOT_ADDRESS, sender)))
 		
 		s = smtplib.SMTP()
 		s.connect()
