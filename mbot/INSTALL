@@ -1,0 +1,16 @@
+INSTALLING MBOT
+
+$Id$
+
+mbot is a mail bot, and is easily installable on your system, provided
+it has a mail server running and accepting mails from the outside.
+
+As the primary intended purpose of mbot is giving internet access to
+people having only mail, it may be of no interest to install this on a
+stand alone computer.
+
+To install that mail bot, just add a line in your mail alias file:
+  mbot: "|/path/to/mbot/mbot.py"
+
+If you use exim, be sure to add the option 'pipe_as_creator' to your
+configuration, in the 'address_pipe' section
