@@ -31,4 +31,110 @@ Mbot, le robot mail multi-usage
 \layout Author
 
 Dimitri Fontaine & Christophe Truffier
+\layout Section
+
+Présentation
+\layout Standard
+
+Ce document décrit de manière relativement précise le fonctionnement du
+ robot, ces fonctionnalitées et sont but.
+\layout Standard
+
+Pourquoi ? Le but premier était de permettre à des gens n'ayant pas accès
+ à internet de faire des recherches web, lire des pages et également envoyer
+ des commandes au serveur afin que ce dernier les executes.
+\layout Standard
+
+Fonctionnalités Elles sont actuellement au nombre de 4 et servent à manier
+ les infos que l'utilisateur met dans son message.
+ Ces fonctionnalitées sont les « Handler ».
+\layout Standard
+
+Le premier handler est « MailHandler », il sert d'une part à renvoyer le
+ mail d'origine si aucun handler n'est appellé et d'un autre côté il sert
+ à tous les handler de manière générale.
+\layout Standard
+
+Le second handler, appellé « GoogleHandler », sert à la recherche d'infos
+ sur le web grâce à Google.
+ Sont utilisation est simple, l'utilisateur prépare son mail de la manière
+ suivante : - le sujet contient le mot clef "google" - la recherche à effectuer
+ est dans le corps du message.
+ Les mots clé de la recherche sont regroupés par ligne.
+\layout Standard
+
+Le troisième, « PipeHandler », est utilisé pour passer des commandes au
+ robot.
+ Le sujet contient la commande précédée du pipe ('|'), le résultat sera
+ issu du contenu du mail « pipé » à la commande.
+ C'est à dire que le contenu du mail sera considéré comme l'entrée standard
+ de la commande donnée.
+\layout Standard
+
+Le quatrième handler, nommé « NewsHandler », a été dévelloppé pour permettre
+ le stockage de news dans une base de donnée.
+ Le titre de la news correspond à ce qui est renseigné avec l'objet du mail
+ (ce dernier commançant par news, ceci sera expliqué plus loin), le contenu
+ du mail sert donc de corps de la news.
+ La possibilitée d'avoir une image associée à la news a été implémentée,
+ ce qui permet d'agrémenter un texte d'une photo ou tout autre image.
+ Il est renvoyé à l'expéditeur le numéro d'id de la news et celui de l'image
+ le cas échéant.
+\layout Section
+
+Les handlers
+\layout Subsection
+
+Mail
+\layout Standard
+
+Ce handler est utilisé pour tous les autres, il permet la récupération de
+ données tel que l'expéditeur, le destinataire etc.
+ Ces infos sont utilisées par les autres handler pour leurs traitements
+ respectifs.
+\layout Standard
+
+Dans ce handler on ne fait aucun traitement, il renvoies donc le mail d'origine
+ si ce dernier n'a pas un sujet contenant un mot clé.
+ La méthode "__init__" permet d'initialiser certaines variables décrites
+ plus haut.
+ 
+\layout Subsection
+
+Google
+\layout Standard
+
+La méthode utilisée ici est simple; nous devons passer en paramètres à google
+ les mots clé qui sont dans le message.
+ Pour ce faire nous définissons deux paramètres: - l'url de google: www.google.fr
+ - l'url de base: /search?q=
+\layout Standard
+
+Ensuite il faut que le handler réorganise les données de tel manière que
+ cela soit interprété (et écrit) correctement pour que google fasse la bonne
+ recherche.
+ La réponse obtenue est renvoyée à l'expéditeur à l'aide d'un tableau de
+ valeur (appellé tuple en python) qui est rempli en fonction du nombre de
+ recherches demandés : une par ligne dans le corps du mail d'origine.
+\layout Subsection
+
+Pipe
+\layout Standard
+
+Grâce à ce handler il est possible de procéder à l'exécution d'une commande
+ particulière; le contenu du mail sera utilisé comme données envoyées au
+ pipe.
+ Ici la réponse qui est retournée est le résultat de cat corps_du_mail |
+ commande 
+\layout Subsection
+
+News
+\layout Standard
+
+Le handler récupère le destinataire, le corps du message, l'expéditeur,
+ la date ; ceci afin de remplir la base de données.
+ Tous les champs texte susceptibles de contenir des caractères accentués
+ sont "échappés" afin de passer correctement lors du passage à la base de
+ donnée.
+ 
 \the_end
