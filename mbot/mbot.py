@@ -148,15 +148,15 @@ def main():
 				log.debug("Instanciate handler %s for '%s'" \
 					  % (handler, subject[len(s):]))
 			except:
-				log.error("Impossible to load handler: %s" \
+				log.err("Impossible to load handler: %s" \
 					  % handler)
-				log.error("%s: %s" \
+				log.err("%s: %s" \
 					  % (sys.exc_type, sys.exc_value))
 			break
 
 	# If we have no handler, we send an error mail
 	if h is None:
-		log.error("No handler found for '%s'" % subject)
+		log.err("No handler found for '%s'" % subject)
 		mesg = "Sorry, mbot is not configured to handle your request"
 		resp.attach(MIMEText(mesg))
 
